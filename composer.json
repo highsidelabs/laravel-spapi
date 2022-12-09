@@ -1,0 +1,40 @@
+{
+    "name": "highsidelabs/laravel-spapi",
+    "type": "library",
+    "description": "A Laravel wrapper for Amazon's Selling Partner API (via jlevers/selling-partner-api)",
+    "keywords": [
+        "laravel",
+        "wrapper",
+        "selling-partner-api",
+        "sp-api",
+        "amazon",
+        "ecommerce",
+        "sdk",
+        "rest"
+    ],
+    "authors": [
+        {
+            "name": "Jesse Evers",
+            "email": "jesse@highsidelabs.co"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "illuminate/support": "^9.41",
+        "illuminate/database": "^9.41",
+        "illuminate/cache": "^9.41",
+        "haydenpierce/class-finder": "^0.4.4",
+        "jlevers/selling-partner-api": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "HighsideLabs\\LaravelSpApi\\": "src/"
+        }
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.13"
+    },
+    "scripts": {
+        "lint": "vendor/bin/php-cs-fixer fix"
+    }
+}
