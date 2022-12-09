@@ -3,6 +3,7 @@
     "type": "library",
     "description": "A Laravel wrapper for Amazon's Selling Partner API (via jlevers/selling-partner-api)",
     "version": "0.1.0",
+    "license": "BSD-3-Clause",
     "keywords": [
         "laravel",
         "wrapper",
