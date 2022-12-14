@@ -19,8 +19,4 @@ return [
         // Valid options are NA, EU, FE
         'endpoint' => env('SPAPI_ENDPOINT_REGION', 'NA'),
     ],
-
-    'multiuser' => [
-        'credentials_table' => 'spapi_credentials',   
-    ],
 ];

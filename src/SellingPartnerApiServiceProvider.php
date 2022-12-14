@@ -3,17 +3,16 @@
 namespace HighsideLabs\LaravelSpApi;
 
 use HaydenPierce\ClassFinder\ClassFinder;
+use HighsideLabs\LaravelSpApi\Models\Credentials;
 use Illuminate\Contracts\Support\DeferrableProvider;
-use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
-use SellingPartnerApi\Configuration;
 
 class SellingPartnerApiServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     public function __construct($app)
     {
         parent::__construct($app);
-        $this->apiClasses = ClassFinder::getClassesInNamespace('SellingPartnerApi\Api');
+        $this->apiClasses = SellingPartnerApi::getSpApiClasses();
     }
 
     /**
@@ -27,6 +26,16 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
         $this->publishes([
             __DIR__ . '/../config/spapi.php' => config_path('spapi.php'),
         ], 'config');
+
+        // Publish sellers and spapi_credentials migrations
+        $time = time();
+        $sellersMigrationFile = date('Y_m_d_His', $time) . '_create_spapi_sellers_table.php';
+        $credentialsMigrationFile = date('Y_m_d_His', $time + 1) . '_create_spapi_credentials_table.php';
+        $this->publishes([
+            __DIR__ . '/../database/migrations/create_spapi_sellers_table.php.stub' => database_path('migrations/' . $sellersMigrationFile),
+            __DIR__ . '/../database/migrations/create_spapi_credentials_table.php.stub' => database_path('migrations/' . $credentialsMigrationFile),
+            __DIR__ . '/../src/SpApiCredentials.php' => app_path('Models/SpApiCredentials.php'),
+        ], 'multiuser');
     }
 
 	/**
@@ -60,20 +69,19 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
      */
     private function registerSingleUser(): void
     {
-        foreach ($this->apiClasses as $cls) {
-            $alias = 'HighsideLabs\LaravelSpApi\Api\\' . Arr::last(explode('\\', $cls));
-            class_alias($cls, $alias);
+        $creds = new Credentials([
+            'lwa_client_id' => config('spapi.singleuser.lwa.client_id'),
+            'lwa_client_secret' => config('spapi.singleuser.lwa.client_secret'),
+            'lwa_refresh_token' => config('spapi.singleuser.lwa.refresh_token'),
+            'role_arn' => config('spapi.aws.role_arn'),
+            'aws_access_key_id' => config('spapi.aws.access_key_id'),
+            'aws_secret_access_key' => config('spapi.aws.secret_access_key'),
+            'region' => config('spapi.singleuser.endpoint'),
+        ]);
+        $config = $creds->toSpApiConfiguration();
 
-            $config = new Configuration([
-                'lwaClientId' => config('spapi.singleuser.lwa.client_id'),
-                'lwaClientSecret' => config('spapi.singleuser.lwa.client_secret'),
-                'lwaRefreshToken' => config('spapi.singleuser.lwa.refresh_token'),
-                'awsAccessKeyId' => config('spapi.aws.access_key_id'),
-                'awsSecretAccessKey' => config('spapi.aws.secret_access_key'),
-                'endpoint' => constant('SellingPartnerApi\Endpoint::' . config('spapi.singleuser.endpoint')),
-            ]);
+        foreach ($this->apiClasses as $cls) {
             $instance = new $cls($config);
-            $this->app->singleton($alias, fn () => $instance);
             $this->app->singleton($cls, fn () => $instance);
         }
     }
@@ -84,5 +92,9 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
      * @return  void
      */
     private function registerMultiUser(): void
-    {}
+    {
+        foreach ($this->apiClasses as $cls) {
+            $this->app->singleton($cls, fn () => new SellingPartnerApi($cls));
+        }
+    }
 }
