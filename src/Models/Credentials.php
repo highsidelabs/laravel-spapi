@@ -61,8 +61,8 @@ class Credentials extends Model
             'awsSecretAccessKey' => config('spapi.aws.secret_access_key'),
             'roleArn' => config('spapi.aws.role_arn'),
             'endpoint' => SellingPartnerApi::regionToEndpoint($this->region),
-            'accessToken' => $this->access_token,
-            'expiresAt' => $this->expires_at,
+            'accessToken' => $this->_getAccessToken(),
+            'accessTokenExpiration' => $this->_getExpiresAt(),
         ]);
     }
 
@@ -143,9 +143,9 @@ class Credentials extends Model
             $this->access_token = $cachedToken;
         } else {
             $auth = new Authentication([
-                'lwaClientId' => $this->lwa_client_id,
-                'lwaClientSecret' => $this->lwa_client_secret,
-                'lwaRefreshToken' => $this->lwa_refresh_token,
+                'lwaClientId' => $this->client_id,
+                'lwaClientSecret' => $this->client_secret,
+                'lwaRefreshToken' => $this->refresh_token,
                 'awsAccessKeyId' => config('spapi.aws.access_key_id'),
                 'awsSecretAccessKey' => config('spapi.aws.secret_access_key'),
                 'roleArn' => config('spapi.aws.role_arn'),
@@ -155,8 +155,8 @@ class Credentials extends Model
             [$newAccessToken, $expiresTimestamp] = $auth->requestLWAToken();
             $cacheExpiration = Carbon::createFromTimestamp($expiresTimestamp);
 
-            Cache::store($tokenCacheKey, $newAccessToken, $cacheExpiration);
-            Cache::store($expirationCacheKey, $expiresTimestamp, $cacheExpiration);
+            Cache::put($tokenCacheKey, $newAccessToken, $cacheExpiration);
+            Cache::put($expirationCacheKey, $expiresTimestamp, $cacheExpiration);
             $this->access_token = $newAccessToken;
             $this->expires_at = $expiresTimestamp;
         }
