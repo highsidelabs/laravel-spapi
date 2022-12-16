@@ -25,10 +25,10 @@ $ composer require highsidelabs/laravel-spapi
 ------
 
 This library has two modes:
-1. **single-user mode**, which you should use if you only plan to make requests to the Selling Partner API with a single set of credentials (most people fall into this category, so if you're not sure, this is probably you).
-2. **multi-user mode**, which makes it easy to make requests to the Selling Partner API from within Laravel when you have multiple sets of SP API credentials (for instance, if you operate multiple seller accounts, or operate one seller account in multiple regions).
+1. **Single-seller mode**, which you should use if you only plan to make requests to the Selling Partner API with a single set of credentials (most people fall into this category, so if you're not sure, this is probably you).
+2. **Multi-seller mode**, which makes it easy to make requests to the Selling Partner API from within Laravel when you have multiple sets of SP API credentials (for instance, if you operate multiple seller accounts, or operate one seller account in multiple regions).
 
-## Single-user mode
+## Single-seller mode
 
 ### Setup
 
@@ -99,7 +99,7 @@ class SpApiController extends Controller
 ```
 
 
-## Multi-user mode
+## Multi-seller mode
 
 ### Setup
 
