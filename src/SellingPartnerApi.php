@@ -6,30 +6,26 @@ use HaydenPierce\ClassFinder\ClassFinder;
 use HighsideLabs\LaravelSpApi\Models\Credentials;
 use InvalidArgumentException;
 
-class SellingPartnerApi {
+final class SellingPartnerApi {
     public const REGIONS = ['NA', 'EU', 'FE'];
 
-    public function __construct(string $apiCls)
-    {
+    /**
+     * @param string $apiCls  The SP API class to instantiate.
+     * @param \HighsideLabs\LaravelSpApi\Models\Credentials|int $credentials
+     *  The Credentials or id of the credentials to use for an SP API class.
+     */
+    public static function makeApi(string $apiCls, Credentials|int $credentials) {
         if (!in_array($apiCls, self::getSpApiClasses())) {
             throw new InvalidArgumentException("Invalid SP API class: $apiCls");
         }
 
-        $this->apiCls = $apiCls;
-    }
-
-    /**
-     * @param \HighsideLabs\LaravelSpApi\Models\Credentials|int $credentials
-     *  The Credentials or id of the credentials to use for an SP API class.
-     */
-    public function withCredentials(Credentials|int $credentials) {
         $creds = $credentials;
         if (is_int($credentials)) {
-            $creds = Credentials::findOrFails($credentials);
+            $creds = Credentials::findOrFail($credentials);
         }
 
         $config = $creds->toSpApiConfiguration();
-        return new $this->apiCls($config);
+        return new $apiCls($config);
     }
 
     /**
@@ -39,7 +35,9 @@ class SellingPartnerApi {
      */
     public static function getSpApiClasses(): array
     {
-        return ClassFinder::getClassesInNamespace('SellingPartnerApi\Api');
+        $classes = ClassFinder::getClassesInNamespace('SellingPartnerApi\Api');
+        // Don't return the BaseApi class, since it is abstract (and thus not instantiable)
+        return array_filter($classes, fn ($cls) => is_subclass_of($cls, 'SellingPartnerApi\Api\BaseApi'));
     }
 
     /**
@@ -48,7 +46,7 @@ class SellingPartnerApi {
      * @param string $region
      * @return string
      */
-    public static function regionToEndpoint(string $region): string
+    public static function regionToEndpoint(string $region): array
     {
         if (!in_array($region, static::REGIONS)) {
             throw new InvalidArgumentException("Invalid SP API region: $region");

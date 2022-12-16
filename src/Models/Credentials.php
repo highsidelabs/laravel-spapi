@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Cache;
 use SellingPartnerApi\Authentication;
-use SellingPartnerApi\Configuration;
+use HighsideLabs\LaravelSpApi\Configuration;
 
 class Credentials extends Model
 {
@@ -17,8 +17,8 @@ class Credentials extends Model
     protected $fillable = [
         'selling_partner_id',
         'region',
-        'lwa_client_id',
-        'lwa_client_secret',
+        'client_id',
+        'client_secret',
         'refresh_token',
         'seller_id',
     ];
@@ -31,16 +31,32 @@ class Credentials extends Model
     protected $expires_at = null;
 
     /**
-     * Convert this Credentials instance to a SellingPartnerApi\Configuration instance.
+     * Use these credentials on the given SP API class, and return the usable instance.
      *
-     * @return \SellingPartnerApi\Credentials
+     * @param mixed $apiInstance
+     * @return mixed
      */
-    public function toSpApiConfiguration(): Configuration
+    public function useOn($apiInstance)
     {
-        return new Configuration([
-            'lwaClientId' => $this->lwa_client_id,
-            'lwaClientSecret' => $this->lwa_client_secret,
-            'lwaRefreshToken' => $this->lwa_refresh_token,
+        $config = $this->toSpApiConfiguration();
+        $apiInstance->setConfig($config);
+        return $apiInstance;
+    }
+
+    /**
+     * Convert this Credentials instance to a HighsideLabs\LaravelSpApi\Configuration instance.
+     *
+     * @param bool $placeholder  If true, the returned Configuration will throw an exception if any API
+     *  methods are called. This is useful for preventing unauthorized errors as result of auto-injected
+     *  API class being used before it has been passed through Credentials::useOn().
+     * @return HighsideLabs\LaravelSpApi\Configuration
+     */
+    public function toSpApiConfiguration(bool $placeholder = false): Configuration
+    {
+        return new Configuration($placeholder, [
+            'lwaClientId' => $this->client_id,
+            'lwaClientSecret' => $this->client_secret,
+            'lwaRefreshToken' => $this->refresh_token,
             'awsAccessKeyId' => config('spapi.aws.access_key_id'),
             'awsSecretAccessKey' => config('spapi.aws.secret_access_key'),
             'roleArn' => config('spapi.aws.role_arn'),

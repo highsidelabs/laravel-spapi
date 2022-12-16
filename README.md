@@ -22,7 +22,15 @@ If you've found this library useful, please consider [becoming a Sponsor](https:
 $ composer require highsidelabs/laravel-spapi
 ```
 
-## Setup
+------
+
+This library has two modes:
+1. **single-user mode**, which you should use if you only plan to make requests to the Selling Partner API with a single set of credentials (most people fall into this category, so if you're not sure, this is probably you).
+2. **multi-user mode**, which makes it easy to make requests to the Selling Partner API from within Laravel when you have multiple sets of SP API credentials (for instance, if you operate multiple seller accounts, or operate one seller account in multiple regions).
+
+## Single-user mode
+
+### Setup
 
 1. Publish the config file:
 
@@ -57,12 +65,11 @@ SPAPI_LWA_REFRESH_TOKEN=
 # SPAPI_ENDPOINT_REGION=
 ```
 
-If in Seller Central, you configured your SP API app with an IAM role ARN rather than an IAM user ARN, you'll need to put that ARN in the `SPAPI_AWS_ROLE_ARN` environment variable. Otherwise, you can leave it blank. Similarly, if you're using the North American SP API endpoint (`https://sellingpartnerapi-na.amazon.com`), you can leave out the `SPAPI_ENDPOINT_REGION` variable. Otherwise, set it to the region code for the endpoint you want to use (EU for Europe, FE for Far East, or NA for North America).
+If in Seller Central, you configured your SP API app with an IAM role ARN rather than an IAM user ARN, you'll need to put that ARN in the `SPAPI_AWS_ROLE_ARN` environment variable. Otherwise, you can leave it blank. Set `SPAPI_ENDPOINT_REGION` to the region code for the endpoint you want to use (EU for Europe, FE for Far East, or NA for North America).
 
 You're ready to go!
 
-
-## Usage
+### Usage
 
 All of the API classes supported by [jlevers/selling-partner-api](https://github.com/jlevers/selling-partner-api#supported-api-segments) can be type-hinted. This example assumes you have access to the `Selling Partner Insights` role in your SP API app configuration (so that you can call `SellersV1Api::getMarketplaceParticipations()`), but the same principle applies to type-hinting any other Selling Partner API class.
 
@@ -89,4 +96,116 @@ class SpApiController extends Controller
         }
     }
 }
+```
+
+
+## Multi-user mode
+
+### Setup
+
+1. Publish the config file:
+
+```bash
+# Publish config/spapi.php file
+$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="config"
+```
+
+2. Change the `installation_type` in `config/spapi.php` to `multiuser`.
+
+3. Publish the multi-user-related migrations:
+
+```bash
+# Publish migrations to database/migrations/
+$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="multiuser"
+```
+
+
+4. Run the database migrations to set up the `spapi_sellers` and `spapi_credentials` tables (corresponding to the `HighsideLabs\LaravelSpApi\Models\Seller` and `HighsideLabs\LaravelSpApi\Models\Credentials` models, respectively):
+
+```bash
+$ php artisan migrate
+```
+
+5. Register the `LaravelSpApi` service provider in `config/app.php` by adding it to the `providers` key:
+
+```php
+[
+    // ...
+
+    'providers' => [
+        // ...
+        HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider::class
+    ]
+]
+```
+
+6. Add these environment variables to your `.env`:
+
+```env
+SPAPI_AWS_ACCESS_KEY_ID=
+SPAPI_AWS_SECRET_ACCESS_KEY=
+```
+
+### Usage
+
+First you'll need to create a `Seller`, and some `Credentials` for that seller. The `Seller` and `Credentials` models work just like any other Laravel model.
+
+```php
+use HighsideLabs\LaravelSpApi\Models;
+
+$seller = Models\Seller::create(['name' => 'MySeller']);
+$credentials = Models\Credentials::create([
+    'seller_id' => $seller->id,
+    // You can find your selling partner ID/merchant ID by going to
+    // https://<regional-seller-central-domain>/sw/AccountInfo/MerchantToken/step/MerchantToken
+    'selling_partner_id' => '<AMAZON SELLER ID>',
+    // Can be NA, EU, or FE
+    'region' => 'NA'
+    // The LWA client ID and client secret for the SP API application these credentials were created with
+    'client_id' => 'amzn....',
+    'client_secret' => 'fec9/aw....',
+    // The LWA refresh token for this seller
+    'refresh_token' => 'IWeB|....',
+]);
+```
+
+Once you have credentials in the database, you can use them like this:
+
+```php
+use HighsideLabs\LaravelSpApi\Models\Credentials;
+use Illuminate\Http\JsonResponse;
+use SellingPartnerApi\Api\SellersV1Api as SellersApi;
+use SellingPartnerApi\ApiException;
+
+class SpApiController extends Controller
+{
+    public function __construct(SellersApi $api)
+    {
+        // Retrieve the credentials we just created
+        $creds = Credentials::first();
+        $this->api = Credentials::useOn($api);
+        // You can now make calls to the SP API with $creds using $this->api!
+    }
+
+    public function index(): JsonResponse
+    {
+        try {
+            $result = $this->api->getMarketplaceParticipations();
+            return response()->json($result);
+        } catch (ApiException $e) {
+            $jsonBody = json_decode($e->getResponseBody());
+            return response()->json($jsonBody, $e->getCode());
+        }
+    }
+}
+```
+
+Or, if you want to use an Selling Partner API class without auto-injecting it, you can quickly create one like this:
+
+```php
+use HighsideLabs\LaravelSpApi\SellingPartnerApi;
+use SellingPartnerApi\Api\SellersV1Api as SellersApi;
+
+$creds = Credentials::first();
+$api = SellingPartnerApi::makeApi(SellersApi::class, $creds);
 ```

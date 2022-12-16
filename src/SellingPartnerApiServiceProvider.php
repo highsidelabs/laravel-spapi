@@ -2,10 +2,11 @@
 
 namespace HighsideLabs\LaravelSpApi;
 
-use HaydenPierce\ClassFinder\ClassFinder;
+use HighsideLabs\LaravelSpApi\Configuration;
 use HighsideLabs\LaravelSpApi\Models\Credentials;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
+use SellingPartnerApi\Endpoint;
 
 class SellingPartnerApiServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -34,7 +35,6 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
         $this->publishes([
             __DIR__ . '/../database/migrations/create_spapi_sellers_table.php.stub' => database_path('migrations/' . $sellersMigrationFile),
             __DIR__ . '/../database/migrations/create_spapi_credentials_table.php.stub' => database_path('migrations/' . $credentialsMigrationFile),
-            __DIR__ . '/../src/SpApiCredentials.php' => app_path('Models/SpApiCredentials.php'),
         ], 'multiuser');
     }
 
@@ -94,7 +94,16 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
     private function registerMultiUser(): void
     {
         foreach ($this->apiClasses as $cls) {
-            $this->app->singleton($cls, fn () => new SellingPartnerApi($cls));
+            $placeholderConfig = new Configuration(true, [
+                'lwaClientId' => 'PLACEHOLDER',
+                'lwaClientSecret' => 'PLACEHOLDER',
+                'lwaRefreshToken' => 'PLACEHOLDER',
+                'roleArn' => 'PLACEHOLDER',
+                'awsAccessKeyId' => 'PLACEHOLDER',
+                'awsSecretAccessKey' => 'PLACEHOLDER',
+                'endpoint' => Endpoint::NA,
+            ]);
+            $this->app->bind($cls, fn () => new $cls($placeholderConfig));
         }
     }
 }
