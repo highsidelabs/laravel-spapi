@@ -22,7 +22,19 @@ If you've found this library useful, please consider [becoming a Sponsor](https:
 $ composer require highsidelabs/laravel-spapi
 ```
 
+## Table of Contents 
+
+* [Overview](#overview)
+* [Single-seller mode](#single-seller-mode)
+    * [Setup](#setup)
+    * [Usage](#usage)
+* [Multi-seller mode](#multi-seller-mode)
+    * [Setup](#setup-1)
+    * [Usage](#usage-1)
+
 ------
+
+## Overview
 
 This library has two modes:
 1. **Single-seller mode**, which you should use if you only plan to make requests to the Selling Partner API with a single set of credentials (most people fall into this category, so if you're not sure, this is probably you).
