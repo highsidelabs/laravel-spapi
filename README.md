@@ -44,13 +44,7 @@ This library has two modes:
 
 ### Setup
 
-1. Publish the config file:
-
-```bash
-$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="config"
-```
-
-2. Register the `LaravelSpApi` service provider in `config/app.php` by adding it to the `providers` key:
+1. Register the `LaravelSpApi` service provider in `config/app.php` by adding it to the `providers` key:
 
 ```php
 [
@@ -61,6 +55,12 @@ $ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartne
         HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider::class
     ]
 ]
+```
+
+2. Publish the config file:
+
+```bash
+$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="config"
 ```
 
 3. Add these environment variables to your `.env`:
@@ -115,30 +115,7 @@ class SpApiController extends Controller
 
 ### Setup
 
-1. Publish the config file:
-
-```bash
-# Publish config/spapi.php file
-$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="config"
-```
-
-2. Change the `installation_type` in `config/spapi.php` to `multiuser`.
-
-3. Publish the multi-user-related migrations:
-
-```bash
-# Publish migrations to database/migrations/
-$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="multiuser"
-```
-
-
-4. Run the database migrations to set up the `spapi_sellers` and `spapi_credentials` tables (corresponding to the `HighsideLabs\LaravelSpApi\Models\Seller` and `HighsideLabs\LaravelSpApi\Models\Credentials` models, respectively):
-
-```bash
-$ php artisan migrate
-```
-
-5. Register the `LaravelSpApi` service provider in `config/app.php` by adding it to the `providers` key:
+1. Register the `LaravelSpApi` service provider in `config/app.php` by adding it to the `providers` key:
 
 ```php
 [
@@ -149,6 +126,29 @@ $ php artisan migrate
         HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider::class
     ]
 ]
+```
+
+2. Publish the config file:
+
+```bash
+# Publish config/spapi.php file
+$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="config"
+```
+
+3. Change the `installation_type` in `config/spapi.php` to `multiuser`.
+
+4. Publish the multi-user-related migrations:
+
+```bash
+# Publish migrations to database/migrations/
+$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="multiuser"
+```
+
+
+5. Run the database migrations to set up the `spapi_sellers` and `spapi_credentials` tables (corresponding to the `HighsideLabs\LaravelSpApi\Models\Seller` and `HighsideLabs\LaravelSpApi\Models\Credentials` models, respectively):
+
+```bash
+$ php artisan migrate
 ```
 
 6. Add these environment variables to your `.env`:
