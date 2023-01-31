@@ -129,7 +129,7 @@ class Credentials extends Model
      *
      * @return string
      */
-    private function _getAccessToken(): string
+    protected function _getAccessToken(): string
     {
         if (!is_null($this->access_token)) {
             return $this->access_token;
@@ -170,7 +170,7 @@ class Credentials extends Model
      *
      * @return int
      */
-    private function _getExpiresAt(): int
+    protected function _getExpiresAt(): int
     {
         if (!is_null($this->expires_at)) {
             return $this->expires_at;
