@@ -10,6 +10,8 @@ use SellingPartnerApi\Endpoint;
 
 class SellingPartnerApiServiceProvider extends ServiceProvider implements DeferrableProvider
 {
+    private $apiClasses;
+
     public function __construct($app)
     {
         parent::__construct($app);
