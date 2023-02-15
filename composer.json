@@ -38,5 +38,12 @@
     },
     "scripts": {
         "lint": "vendor/bin/php-cs-fixer fix"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "HighsideLabs\\LaravelSpApi\\SellingPartnerApiServiceProvider"
+            ]
+        }
     }
 }

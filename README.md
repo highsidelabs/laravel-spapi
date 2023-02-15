@@ -44,26 +44,13 @@ This library has two modes:
 
 ### Setup
 
-1. Register the `LaravelSpApi` service provider in `config/app.php` by adding it to the `providers` key:
-
-```php
-[
-    // ...
-
-    'providers' => [
-        // ...
-        HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider::class
-    ]
-]
-```
-
-2. Publish the config file:
+1. Publish the config file:
 
 ```bash
 $ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="config"
 ```
 
-3. Add these environment variables to your `.env`:
+2. Add these environment variables to your `.env`:
 
 ```env
 SPAPI_AWS_ACCESS_KEY_ID=
@@ -92,15 +79,10 @@ use SellingPartnerApi\ApiException;
 
 class SpApiController extends Controller
 {
-    public function __construct(SellersApi $api)
-    {
-        $this->api = $api;
-    }
-
-    public function index(): JsonResponse
+    public function index(SellersApi $api): JsonResponse
     {
         try {
-            $result = $this->api->getMarketplaceParticipations();
+            $result = $api->getMarketplaceParticipations();
             return response()->json($result);
         } catch (ApiException $e) {
             $jsonBody = json_decode($e->getResponseBody());
@@ -115,29 +97,16 @@ class SpApiController extends Controller
 
 ### Setup
 
-1. Register the `LaravelSpApi` service provider in `config/app.php` by adding it to the `providers` key:
-
-```php
-[
-    // ...
-
-    'providers' => [
-        // ...
-        HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider::class
-    ]
-]
-```
-
-2. Publish the config file:
+1. Publish the config file:
 
 ```bash
 # Publish config/spapi.php file
 $ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="config"
 ```
 
-3. Change the `installation_type` in `config/spapi.php` to `multiuser`.
+2. Change the `installation_type` in `config/spapi.php` to `multiuser`.
 
-4. Publish the multi-user-related migrations:
+3. Publish the multi-user-related migrations:
 
 ```bash
 # Publish migrations to database/migrations/
@@ -145,13 +114,13 @@ $ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartne
 ```
 
 
-5. Run the database migrations to set up the `spapi_sellers` and `spapi_credentials` tables (corresponding to the `HighsideLabs\LaravelSpApi\Models\Seller` and `HighsideLabs\LaravelSpApi\Models\Credentials` models, respectively):
+4. Run the database migrations to set up the `spapi_sellers` and `spapi_credentials` tables (corresponding to the `HighsideLabs\LaravelSpApi\Models\Seller` and `HighsideLabs\LaravelSpApi\Models\Credentials` models, respectively):
 
 ```bash
 $ php artisan migrate
 ```
 
-6. Add these environment variables to your `.env`:
+5. Add these environment variables to your `.env`:
 
 ```env
 SPAPI_AWS_ACCESS_KEY_ID=
@@ -195,7 +164,7 @@ class SpApiController extends Controller
     {
         // Retrieve the credentials we just created
         $creds = Credentials::first();
-        $this->api = Credentials::useOn($api);
+        $this->api = $creds->useOn($api);
         // You can now make calls to the SP API with $creds using $this->api!
     }
 
@@ -212,7 +181,7 @@ class SpApiController extends Controller
 }
 ```
 
-Or, if you want to use an Selling Partner API class without auto-injecting it, you can quickly create one like this:
+Or, if you want to use a Selling Partner API class without auto-injecting it, you can quickly create one like this:
 
 ```php
 use HighsideLabs\LaravelSpApi\SellingPartnerApi;
