@@ -70,12 +70,10 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
     private function registerSingleUser(): void
     {
         $creds = new Credentials([
-            'lwa_client_id' => config('spapi.singleuser.lwa.client_id'),
-            'lwa_client_secret' => config('spapi.singleuser.lwa.client_secret'),
-            'lwa_refresh_token' => config('spapi.singleuser.lwa.refresh_token'),
+            'client_id' => config('spapi.singleuser.lwa.client_id'),
+            'client_secret' => config('spapi.singleuser.lwa.client_secret'),
+            'refresh_token' => config('spapi.singleuser.lwa.refresh_token'),
             'role_arn' => config('spapi.aws.role_arn'),
-            'aws_access_key_id' => config('spapi.aws.access_key_id'),
-            'aws_secret_access_key' => config('spapi.aws.secret_access_key'),
             'region' => config('spapi.singleuser.endpoint'),
         ]);
         $config = $creds->toSpApiConfiguration();
