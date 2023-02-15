@@ -73,7 +73,7 @@ class Credentials extends Model
      */
     public function getAccessTokenCacheKey(): string
     {
-        if (config('spapi.installation_type') === 'singleuser') {
+        if (config('spapi.installation_type') === 'single') {
             return 'spapi:access_token';
         }
         return "spapi:access_token:{$this->id}";
@@ -86,7 +86,7 @@ class Credentials extends Model
      */
     public function getExpiresAtCacheKey(): string
     {
-        if (config('spapi.installation_type') === 'singleuser') {
+        if (config('spapi.installation_type') === 'single') {
             return 'spapi:access_token_expiration';
         }
         return "spapi:access_token_expiration:{$this->id}";

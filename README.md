@@ -104,13 +104,13 @@ class SpApiController extends Controller
 $ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="config"
 ```
 
-2. Change the `installation_type` in `config/spapi.php` to `multiuser`.
+2. Change the `installation_type` in `config/spapi.php` to `multi`.
 
-3. Publish the multi-user-related migrations:
+3. Publish the multi-seller migrations:
 
 ```bash
 # Publish migrations to database/migrations/
-$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="multiuser"
+$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="multi"
 ```
 
 

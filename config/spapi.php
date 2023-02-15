@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'installation_type' => 'singleuser',
+    'installation_type' => 'single',
 
     'aws' => [
         'access_key_id' => env('SPAPI_AWS_ACCESS_KEY_ID'),
@@ -9,7 +9,7 @@ return [
         'role_arn' => env('SPAPI_AWS_ROLE_ARN'),
     ],
 
-    'singleuser' => [
+    'single' => [
         'lwa' => [
             'client_id' => env('SPAPI_LWA_CLIENT_ID'),
             'client_secret' => env('SPAPI_LWA_CLIENT_SECRET'),

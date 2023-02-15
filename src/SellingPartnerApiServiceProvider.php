@@ -37,7 +37,7 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
         $this->publishes([
             __DIR__ . '/../database/migrations/create_spapi_sellers_table.php.stub' => database_path('migrations/' . $sellersMigrationFile),
             __DIR__ . '/../database/migrations/create_spapi_credentials_table.php.stub' => database_path('migrations/' . $credentialsMigrationFile),
-        ], 'multiuser');
+        ], 'multi');
     }
 
 	/**
@@ -47,10 +47,10 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
 	 */
     public function register(): void
     {
-        if (config('spapi.installation_type') === 'singleuser') {
-            $this->registerSingleUser();
+        if (config('spapi.installation_type') === 'single') {
+            $this->registerSingleSeller();
         } else {
-            $this->registerMultiUser();
+            $this->registerMultiSeller();
         }
     }
 
@@ -69,14 +69,14 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
      *
      * @return void
      */
-    private function registerSingleUser(): void
+    private function registerSingleSeller(): void
     {
         $creds = new Credentials([
-            'client_id' => config('spapi.singleuser.lwa.client_id'),
-            'client_secret' => config('spapi.singleuser.lwa.client_secret'),
-            'refresh_token' => config('spapi.singleuser.lwa.refresh_token'),
+            'client_id' => config('spapi.single.lwa.client_id'),
+            'client_secret' => config('spapi.single.lwa.client_secret'),
+            'refresh_token' => config('spapi.single.lwa.refresh_token'),
             'role_arn' => config('spapi.aws.role_arn'),
-            'region' => config('spapi.singleuser.endpoint'),
+            'region' => config('spapi.single.endpoint'),
         ]);
         $config = $creds->toSpApiConfiguration();
 
@@ -91,7 +91,7 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
      *
      * @return  void
      */
-    private function registerMultiUser(): void
+    private function registerMultiSeller(): void
     {
         foreach ($this->apiClasses as $cls) {
             $placeholderConfig = new Configuration(true, [
