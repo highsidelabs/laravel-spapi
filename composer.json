@@ -2,7 +2,7 @@
     "name": "highsidelabs/laravel-spapi",
     "type": "library",
     "description": "A Laravel wrapper for Amazon's Selling Partner API (via jlevers/selling-partner-api)",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "license": "BSD-3-Clause",
     "keywords": [
         "laravel",
@@ -22,9 +22,9 @@
     ],
     "require": {
         "php": ">=7.4",
-        "illuminate/support": "^9.41",
-        "illuminate/database": "^9.41",
-        "illuminate/cache": "^9.41",
+        "illuminate/support": "^10.0",
+        "illuminate/database": "^10.0",
+        "illuminate/cache": "^10.0",
         "haydenpierce/class-finder": "^0.4.4",
         "jlevers/selling-partner-api": "^5.5"
     },
