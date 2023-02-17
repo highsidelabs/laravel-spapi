@@ -16,6 +16,8 @@ If you've found this library useful, please consider [becoming a Sponsor](https:
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate?business=EL4PRLAEMGXNQ&currency_code=USD)
 
+_There is a more in-depth guide to using this package [on our blog](https://highsidelabs.co/blog/laravel-selling-partner-api)._
+
 ## Installation
 
 ```bash
@@ -104,7 +106,9 @@ class SpApiController extends Controller
 $ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="config"
 ```
 
-2. Change the `installation_type` in `config/spapi.php` to `multi`.
+2. Update the configuration to support multi-seller usage.
+    * Change the `installation_type` in `config/spapi.php` to `multi`.
+    * If the different sets of seller credentials you plan to use aren't all associated with the same set of AWS credentials (access key ID, secret access key, and optionally role ARN), make sure to change the `aws.dynamic` key to true. If you don't make that change before running migrations (the next step), the fields for AWS credentials won't be added to the database. (If you're not sure if this change applies to you, it probably doesn't.)
 
 3. Publish the multi-seller migrations:
 
@@ -120,7 +124,7 @@ $ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartne
 $ php artisan migrate
 ```
 
-5. Add these environment variables to your `.env`:
+5. Add these environment variables to your `.env` (unless you changed the `aws.dynamic` configuration flag to `true` in step 2):
 
 ```env
 SPAPI_AWS_ACCESS_KEY_ID=
@@ -147,6 +151,12 @@ $credentials = Models\Credentials::create([
     'client_secret' => 'fec9/aw....',
     // The LWA refresh token for this seller
     'refresh_token' => 'IWeB|....',
+
+    // If you have the `aws.dynamic` config flag set to true, you'll also need these attributes:
+    // 'access_key_id' => 'AKIA....',
+    // 'secret_access_key' => '23pasdf....',
+    // // Only necessary if you configured your SP API setup with an IAM role ARN, otherwise can be omitted
+    // // 'role_arn' => 'arn:aws:iam::....',  
 ]);
 ```
 

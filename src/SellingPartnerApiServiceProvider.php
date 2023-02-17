@@ -5,6 +5,7 @@ namespace HighsideLabs\LaravelSpApi;
 use HighsideLabs\LaravelSpApi\Configuration;
 use HighsideLabs\LaravelSpApi\Models\Credentials;
 use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use SellingPartnerApi\Endpoint;
 
@@ -38,6 +39,16 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
             __DIR__ . '/../database/migrations/create_spapi_sellers_table.php.stub' => database_path('migrations/' . $sellersMigrationFile),
             __DIR__ . '/../database/migrations/create_spapi_credentials_table.php.stub' => database_path('migrations/' . $credentialsMigrationFile),
         ], 'multi');
+
+        $awsColsExist = Schema::hasColumns('spapi_credentials', ['access_key_id', 'secret_access_key', 'role_arn']);
+        // Don't offer the option to publish the AWS migration unless this is a multi-seller installation with dynamic AWS
+        // credentials and the AWS-related columns don't already exist
+        if (config('spapi.installation_type') === 'multi' && config('spapi.aws.dynamic') && !$awsColsExist) {
+            $awsMigrationFile = date('Y_m_d_His', $time + 2) . '_add_aws_fields_to_spapi_credentials_table.php';
+            $this->publishes([
+                __DIR__ . '/../database/migrations/add_aws_fields_to_spapi_credentials_table.php.stub' => database_path('migrations/' . $awsMigrationFile),
+            ], 'add-aws');
+        }
     }
 
 	/**

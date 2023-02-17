@@ -21,6 +21,9 @@ class Credentials extends Model
         'client_secret',
         'refresh_token',
         'seller_id',
+        'access_key_id',
+        'secret_access_key',
+        'role_arn',
     ];
 
     protected $casts = [
@@ -53,13 +56,14 @@ class Credentials extends Model
      */
     public function toSpApiConfiguration(bool $placeholder = false): Configuration
     {
+        $dynamicAws = config('spapi.aws.dynamic');
         return new Configuration($placeholder, [
             'lwaClientId' => $this->client_id,
             'lwaClientSecret' => $this->client_secret,
             'lwaRefreshToken' => $this->refresh_token,
-            'awsAccessKeyId' => config('spapi.aws.access_key_id'),
-            'awsSecretAccessKey' => config('spapi.aws.secret_access_key'),
-            'roleArn' => config('spapi.aws.role_arn'),
+            'awsAccessKeyId' => $dynamicAws ? $this->access_key_id : config('spapi.aws.access_key_id'),
+            'awsSecretAccessKey' => $dynamicAws ? $this->secret_access_key : config('spapi.aws.secret_access_key'),
+            'roleArn' => $dynamicAws ? $this->role_arn : config('spapi.aws.role_arn'),
             'endpoint' => SellingPartnerApi::regionToEndpoint($this->region),
             'accessToken' => $this->_getAccessToken(),
             'accessTokenExpiration' => $this->_getExpiresAt(),
