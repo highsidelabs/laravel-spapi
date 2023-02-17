@@ -1,5 +1,6 @@
 .env
 composer.lock
 *.code-workspace
+.php-cs-fixer.cache
 
 vendor/

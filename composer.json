@@ -37,7 +37,7 @@
         "friendsofphp/php-cs-fixer": "^3.13"
     },
     "scripts": {
-        "lint": "vendor/bin/php-cs-fixer fix"
+        "lint": "vendor/bin/php-cs-fixer fix ."
     },
     "extra": {
         "laravel": {

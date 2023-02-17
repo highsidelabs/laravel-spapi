@@ -20,10 +20,10 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
     }
 
     /**
-	 * Bootstrap the application events.
-	 *
-	 * @return void
-	 */
+     * Bootstrap the application events.
+     *
+     * @return void
+     */
     public function boot(): void
     {
         // Publish config file
@@ -51,11 +51,11 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
         }
     }
 
-	/**
-	 * Register bindings in the container.
-	 *
-	 * @return void
-	 */
+    /**
+     * Register bindings in the container.
+     *
+     * @return void
+     */
     public function register(): void
     {
         if (config('spapi.installation_type') === 'single') {

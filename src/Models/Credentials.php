@@ -1,4 +1,5 @@
 <?php
+
 namespace HighsideLabs\LaravelSpApi\Models;
 
 use Carbon\Carbon;
@@ -101,7 +102,8 @@ class Credentials extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function seller(): BelongsTo {
+    public function seller(): BelongsTo
+    {
         return $this->belongsTo(Seller::class);
     }
 
@@ -110,7 +112,8 @@ class Credentials extends Model
      *
      * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
-    protected function accessToken(): Attribute {
+    protected function accessToken(): Attribute
+    {
         return Attribute::make(
             fn () => $this->_getAccessToken(),
         );
@@ -121,7 +124,8 @@ class Credentials extends Model
      *
      * @return \Illuminate\Database\Eloquent\Casts\Attribute
      */
-    protected function expiresAt(): Attribute {
+    protected function expiresAt(): Attribute
+    {
         return Attribute::make(
             fn () => $this->_getExpiresAt(),
         );

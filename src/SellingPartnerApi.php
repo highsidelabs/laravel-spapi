@@ -6,7 +6,8 @@ use HaydenPierce\ClassFinder\ClassFinder;
 use HighsideLabs\LaravelSpApi\Models\Credentials;
 use InvalidArgumentException;
 
-final class SellingPartnerApi {
+final class SellingPartnerApi
+{
     public const REGIONS = ['NA', 'EU', 'FE'];
 
     /**
@@ -14,7 +15,8 @@ final class SellingPartnerApi {
      * @param \HighsideLabs\LaravelSpApi\Models\Credentials|int $credentials
      *  The Credentials or id of the credentials to use for an SP API class.
      */
-    public static function makeApi(string $apiCls, Credentials|int $credentials) {
+    public static function makeApi(string $apiCls, Credentials|int $credentials)
+    {
         if (!in_array($apiCls, self::getSpApiClasses())) {
             throw new InvalidArgumentException("Invalid SP API class: $apiCls");
         }
