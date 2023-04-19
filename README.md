@@ -1,20 +1,35 @@
-Selling Partner API wrapper for Laravel
-===
+<p align="center">
+    <a href="https://highsidelabs.co" target="_blank">
+        <img src="https://github.com/highsidelabs/.github/blob/main/images/logo.png?raw=true" width="125">
+    </a>
+</p>
 
-[![Total Downloads](https://img.shields.io/packagist/dt/highsidelabs/laravel-spapi.svg?style=flat-square)](https://packagist.org/packages/highsidelabs/laravel-spapi)
-[![Latest Stable Version](https://img.shields.io/packagist/v/highsidelabs/laravel-spapi.svg?style=flat-square)](https://packagist.org/packages/highsidelabs/laravel-spapi)
-[![License](https://img.shields.io/github/license/highsidelabs/laravel-spapi.svg?style=flat-square)](https://packagist.org/packages/highsidelabs/laravel-spapi)
+<p align="center">
+    <a href="https://packagist.org/packages/highsidelabs/laravel-spapi"><img alt="Total downloads" src="https://img.shields.io/packagist/dt/highsidelabs/laravel-spapi.svg?style=flat-square"></a>
+    <a href="https://packagist.org/packages/highsidelabs/laravel-spapi"><img alt="Latest stable version" src="https://img.shields.io/packagist/v/highsidelabs/laravel-spapi.svg?style=flat-square"></a>
+    <a href="https://packagist.org/packages/highsidelabs/laravel-spapi"><img alt="License" src="https://img.shields.io/packagist/l/highsidelabs/laravel-spapi.svg?style=flat-square"></a>
+</p>
 
-Easily access the Selling Partner API with Laravel.
+## Selling Partner API wrapper for Laravel
 
-| | |
-| ------ | ------ |
-| [![Highside Labs Logo](https://highsidelabs.co/static/favicons/favicon.png)](https://highsidelabs.co) | **This package is developed and maintained as part of [Highside Labs](https://highsidelabs.co). If you need support integrating with Amazon's (or any other e-commerce platform's) APIs, we're happy to help! Shoot us an email at [hi@highsidelabs.co](mailto:hi@highsidelabs.co). We'd love to hear from you :)** |
-| | We are the team behind the [Selling Partner API library](https://github.com/jlevers/selling-partner-api). If you need to access the Selling Partner API outside the context of Laravel, we recommending integrating with that library directly.
+Simplify connecting to the Selling Partner API with Laravel. Uses [jlevers/selling-partner-api](https://github.com/jlevers/selling-partner-api) under the hood.
 
-If you've found this library useful, please consider [becoming a Sponsor](https://github.com/sponsors/jlevers), or making a one-time donation via the button below. We appreciate any and all support you can provide!
+### Related packages
 
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate?business=EL4PRLAEMGXNQ&currency_code=USD)
+* [`jlevers/selling-partner-api`](https://github.com/jlevers/selling-partner-api): A PHP library for Amazon's [Selling Partner API](https://developer-docs.amazon.com/sp-api/docs). `highsidelabs/laravel-spapi` is a Laravel wrapper around `jlevers/selling-partner-api`.
+* [`highsidelabs/amazon-business-api`](https://github.com/highsidelabs/amazon-business-api): A PHP library for Amazon's [Business API](https://developer-docs.amazon.com/amazon-business/docs), with a near-identical interface to `jlevers/selling-partner-api`.
+
+---
+
+**This package is developed and maintained by [Highside Labs](https://highsidelabs.co). If you need support integrating with Amazon's (or any other e-commerce platform's) APIs, we're happy to help! Shoot us an email at [hi@highsidelabs.co](mailto:hi@highsidelabs.co). We'd love to hear from you :)**
+
+If you've found any of our packages useful, please consider [becoming a Sponsor](https://github.com/sponsors/highsidelabs), or making a donation via the button below. We appreciate any and all support you can provide!
+
+<p align="center">
+    <a href="https://www.paypal.com/donate/?hosted_button_id=FG8Q6MNB4HJCC"><img alt="Donate to Highside Labs" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif"></a>
+</p>
+
+---
 
 _There is a more in-depth guide to using this package [on our blog](https://highsidelabs.co/blog/laravel-selling-partner-api)._
 
