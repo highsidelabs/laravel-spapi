@@ -17,6 +17,7 @@ Simplify connecting to the Selling Partner API with Laravel. Uses [jlevers/selli
 ### Related packages
 
 * [`jlevers/selling-partner-api`](https://github.com/jlevers/selling-partner-api): A PHP library for Amazon's [Selling Partner API](https://developer-docs.amazon.com/sp-api/docs). `highsidelabs/laravel-spapi` is a Laravel wrapper around `jlevers/selling-partner-api`.
+* [`highsidelabs/walmart-api`](https://github.com/highsidelabs/walmart-api-php): A PHP library for [Walmart's seller and supplier APIs](https://developer.walmart.com), including the Marketplace, Drop Ship Vendor, Content Provider, and Warehouse Supplier APIs.
 * [`highsidelabs/amazon-business-api`](https://github.com/highsidelabs/amazon-business-api): A PHP library for Amazon's [Business API](https://developer-docs.amazon.com/amazon-business/docs), with a near-identical interface to `jlevers/selling-partner-api`.
 
 ---
