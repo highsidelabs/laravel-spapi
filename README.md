@@ -161,7 +161,7 @@ $credentials = Models\Credentials::create([
     // https://<regional-seller-central-domain>/sw/AccountInfo/MerchantToken/step/MerchantToken
     'selling_partner_id' => '<AMAZON SELLER ID>',
     // Can be NA, EU, or FE
-    'region' => 'NA'
+    'region' => 'NA',
     // The LWA client ID and client secret for the SP API application these credentials were created with
     'client_id' => 'amzn....',
     'client_secret' => 'fec9/aw....',
