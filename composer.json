@@ -26,7 +26,7 @@
         "illuminate/database": "^9.41|^10.0",
         "illuminate/cache": "^9.41|^10.0",
         "haydenpierce/class-finder": "^0.4.4",
-        "jlevers/selling-partner-api": "^5.5"
+        "jlevers/selling-partner-api": "^5.9"
     },
     "autoload": {
         "psr-4": {
