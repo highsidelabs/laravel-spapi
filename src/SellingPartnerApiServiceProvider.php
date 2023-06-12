@@ -87,11 +87,14 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
             'role_arn' => config('spapi.aws.role_arn'),
             'region' => config('spapi.single.endpoint'),
         ]);
-        $config = $creds->toSpApiConfiguration();
 
         foreach ($this->apiClasses as $cls) {
-            $instance = new $cls($config);
-            $this->app->singleton($cls, fn () => $instance);
+            $this->app->singleton(
+                $cls,
+                // Converting creds inside the closure prevents errors on
+                // application boot due to missing env vars
+                fn () => new $cls($creds->toSpApiConfiguration())
+            );
         }
     }
 
