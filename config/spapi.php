@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'registration_enbaled' => env('SPAPI_REGISTRATION_ENABLED', true),
+    'registration_enabled' => env('SPAPI_REGISTRATION_ENABLED', true),
 
     'installation_type' => 'single',
 

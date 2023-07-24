@@ -10,7 +10,7 @@ use SellingPartnerApi\Endpoint;
 
 class SellingPartnerApiServiceProvider extends ServiceProvider implements DeferrableProvider
 {
-    private $apiClasses;
+    private array $apiClasses;
 
     /**
      * Bootstrap the application events.
