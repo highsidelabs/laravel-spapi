@@ -5,6 +5,9 @@ return [
 
     'installation_type' => 'single',
 
+    'debug' => env('SPAPI_DEBUG', false),
+    'debug_file' => env('SPAPI_DEBUG_FILE', 'php://output'),
+
     'aws' => [
         'dynamic' => false,
         'access_key_id' => env('SPAPI_AWS_ACCESS_KEY_ID'),
