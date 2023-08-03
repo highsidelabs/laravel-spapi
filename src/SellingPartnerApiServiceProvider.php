@@ -12,12 +12,6 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
 {
     private $apiClasses;
 
-    public function __construct($app)
-    {
-        parent::__construct($app);
-        $this->apiClasses = SellingPartnerApi::getSpApiClasses();
-    }
-
     /**
      * Bootstrap the application events.
      *
@@ -70,7 +64,7 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
      */
     public function provides()
     {
-        return $this->apiClasses;
+        return SellingPartnerApi::API_CLASSES;
     }
 
     /**
@@ -81,6 +75,8 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
     private function registerSingleSeller(): void
     {
         $creds = new Credentials([
+            'access_key_id' => config('spapi.aws.access_key_id'),
+            'secret_access_key' => config('spapi.aws.secret_access_key'),
             'client_id' => config('spapi.single.lwa.client_id'),
             'client_secret' => config('spapi.single.lwa.client_secret'),
             'refresh_token' => config('spapi.single.lwa.refresh_token'),
@@ -88,7 +84,7 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
             'region' => config('spapi.single.endpoint'),
         ]);
 
-        foreach ($this->apiClasses as $cls) {
+        foreach (SellingPartnerApi::API_CLASSES as $cls) {
             $this->app->singleton(
                 $cls,
                 // Converting creds inside the closure prevents errors on
@@ -105,7 +101,7 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
      */
     private function registerMultiSeller(): void
     {
-        foreach ($this->apiClasses as $cls) {
+        foreach (SellingPartnerApi::API_CLASSES as $cls) {
             $placeholderConfig = new Configuration(true, [
                 'lwaClientId' => 'PLACEHOLDER',
                 'lwaClientSecret' => 'PLACEHOLDER',
