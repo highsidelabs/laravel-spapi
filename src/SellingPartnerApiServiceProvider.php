@@ -10,8 +10,6 @@ use SellingPartnerApi\Endpoint;
 
 class SellingPartnerApiServiceProvider extends ServiceProvider implements DeferrableProvider
 {
-    private array $apiClasses;
-
     /**
      * Bootstrap the application events.
      *
@@ -68,9 +66,7 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
      */
     public function provides()
     {
-        return isset($this->apiClasses)
-            ? $this->apiClasses
-            : $this->apiClasses = SellingPartnerApi::getSpApiClasses();;
+        return SellingPartnerApi::API_CLASSES;
     }
 
     /**
@@ -81,6 +77,8 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
     private function registerSingleSeller(): void
     {
         $creds = new Credentials([
+            'access_key_id' => config('spapi.aws.access_key_id'),
+            'secret_access_key' => config('spapi.aws.secret_access_key'),
             'client_id' => config('spapi.single.lwa.client_id'),
             'client_secret' => config('spapi.single.lwa.client_secret'),
             'refresh_token' => config('spapi.single.lwa.refresh_token'),
@@ -88,8 +86,8 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
             'region' => config('spapi.single.endpoint'),
         ]);
 
-        foreach ($this->provides() as $cls) {
-            $this->app->bind(
+        foreach (SellingPartnerApi::API_CLASSES as $cls) {
+            $this->app->singleton(
                 $cls,
                 // Converting creds inside the closure prevents errors on
                 // application boot due to missing env vars
@@ -105,7 +103,7 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
      */
     private function registerMultiSeller(): void
     {
-        foreach ($this->provides() as $cls) {
+        foreach (SellingPartnerApi::API_CLASSES as $cls) {
             $placeholderConfig = new Configuration(true, [
                 'lwaClientId' => 'PLACEHOLDER',
                 'lwaClientSecret' => 'PLACEHOLDER',

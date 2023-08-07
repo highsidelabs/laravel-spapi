@@ -5,10 +5,60 @@ namespace HighsideLabs\LaravelSpApi;
 use HaydenPierce\ClassFinder\ClassFinder;
 use HighsideLabs\LaravelSpApi\Models\Credentials;
 use InvalidArgumentException;
+use SellingPartnerApi\Api;
 
 final class SellingPartnerApi
 {
     public const REGIONS = ['NA', 'EU', 'FE'];
+
+    public const API_CLASSES = [
+        Api\AplusContentV20201101Api::class,
+        Api\AuthorizationV1Api::class,
+        Api\CatalogItemsV0Api::class,
+        Api\CatalogItemsV20201201Api::class,
+        Api\CatalogItemsV20220401Api::class,
+        Api\EasyShipV20220323Api::class,
+        Api\FbaInboundEligibilityV1Api::class,
+        Api\FbaInboundV0Api::class,
+        Api\FbaInventoryV1Api::class,
+        Api\FbaOutboundV20200701Api::class,
+        Api\FeedsV20210630Api::class,
+        Api\FeesV0Api::class,
+        Api\FinancesV0Api::class,
+        Api\ListingsRestrictionsV20210801Api::class,
+        Api\ListingsV20200901Api::class,
+        Api\ListingsV20210801Api::class,
+        Api\MerchantFulfillmentV0Api::class,
+        Api\MessagingV1Api::class,
+        Api\NotificationsV1Api::class,
+        Api\OrdersV0Api::class,
+        Api\ProductPricingV0Api::class,
+        Api\ProductTypeDefinitionsV20200901Api::class,
+        Api\ReportsV20210630Api::class,
+        Api\SalesV1Api::class,
+        Api\SellersV1Api::class,
+        Api\ServiceV1Api::class,
+        Api\ShipmentInvoicingV0Api::class,
+        Api\ShippingV1Api::class,
+        Api\ShippingV2Api::class,
+        Api\SmallAndLightV1Api::class,
+        Api\SolicitationsV1Api::class,
+        Api\TokensV20210301Api::class,
+        Api\UploadsV20201101Api::class,
+        Api\VendorDirectFulfillmentInventoryV1Api::class,
+        Api\VendorDirectFulfillmentOrdersV1Api::class,
+        Api\VendorDirectFulfillmentOrdersV20211228Api::class,
+        Api\VendorDirectFulfillmentPaymentsV1Api::class,
+        Api\VendorDirectFulfillmentSandboxV20211028Api::class,
+        Api\VendorDirectFulfillmentShippingV1Api::class,
+        Api\VendorDirectFulfillmentShippingV20211228Api::class,
+        Api\VendorDirectFulfillmentTransactionsV1Api::class,
+        Api\VendorDirectFulfillmentTransactionsV20211228Api::class,
+        Api\VendorInvoicesV1Api::class,
+        Api\VendorOrdersV1Api::class,
+        Api\VendorShippingV1Api::class,
+        Api\VendorTransactionStatusV1Api::class,
+    ];
 
     /**
      * @param string $apiCls  The SP API class to instantiate.
@@ -17,7 +67,7 @@ final class SellingPartnerApi
      */
     public static function makeApi(string $apiCls, Credentials|int $credentials)
     {
-        if (!in_array($apiCls, self::getSpApiClasses())) {
+        if (!in_array($apiCls, static::API_CLASSES)) {
             throw new InvalidArgumentException("Invalid SP API class: $apiCls");
         }
 
@@ -28,18 +78,6 @@ final class SellingPartnerApi
 
         $config = $creds->toSpApiConfiguration();
         return new $apiCls($config);
-    }
-
-    /**
-     * Get all the SP API classes (from the SellingPartnerApi\Api namespace).
-     *
-     * @return array<string>
-     */
-    public static function getSpApiClasses(): array
-    {
-        $classes = ClassFinder::getClassesInNamespace('SellingPartnerApi\Api');
-        // Don't return the BaseApi class, since it is abstract (and thus not instantiable)
-        return array_filter($classes, fn ($cls) => is_subclass_of($cls, 'SellingPartnerApi\Api\BaseApi'));
     }
 
     /**

@@ -71,7 +71,7 @@ class Credentials extends Model
             'accessTokenExpiration' => $this->_getExpiresAt(),
         ]);
 
-        if(config('spapi.debug', false)) {
+        if (config('spapi.debug', false)) {
             $configuration->setDebug(true);
             $configuration->setDebugFile(config('spapi.debug_file'));
         }
