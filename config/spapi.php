@@ -22,10 +22,9 @@ return [
     ],
 
     /**
-     * Can be used as a security switch to turn API class registration
-     * completely off for non-production environments.
-     * If enabled, obtaining instances of API classes might cause
-     * unintended API requests using the configured credentials.
+     * This can serve as a security switch to entirely disable the registration of API classes
+     * for non-production environments. If enabled, acquiring instances of API classes may
+     * cause unintentional authorization-related requests using the provided credentials.
      **/
     'registration_enabled' => env('SPAPI_REGISTRATION_ENABLED', true),
 
