@@ -58,7 +58,8 @@ class Credentials extends Model
     public function toSpApiConfiguration(bool $placeholder = false): Configuration
     {
         $dynamicAws = config('spapi.aws.dynamic');
-        return new Configuration($placeholder, [
+
+        $configuration = new Configuration($placeholder, [
             'lwaClientId' => $this->client_id,
             'lwaClientSecret' => $this->client_secret,
             'lwaRefreshToken' => $this->refresh_token,
@@ -69,6 +70,13 @@ class Credentials extends Model
             'accessToken' => $this->_getAccessToken(),
             'accessTokenExpiration' => $this->_getExpiresAt(),
         ]);
+
+        if (config('spapi.debug', false)) {
+            $configuration->setDebug(true);
+            $configuration->setDebugFile(config('spapi.debug_file'));
+        }
+
+        return $configuration;
     }
 
     /**

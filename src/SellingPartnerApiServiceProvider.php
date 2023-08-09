@@ -10,8 +10,6 @@ use SellingPartnerApi\Endpoint;
 
 class SellingPartnerApiServiceProvider extends ServiceProvider implements DeferrableProvider
 {
-    private $apiClasses;
-
     /**
      * Bootstrap the application events.
      *
@@ -85,7 +83,7 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
         ]);
 
         foreach (SellingPartnerApi::API_CLASSES as $cls) {
-            $this->app->singleton(
+            $this->app->bind(
                 $cls,
                 // Converting creds inside the closure prevents errors on
                 // application boot due to missing env vars

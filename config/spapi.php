@@ -20,4 +20,7 @@ return [
         // Valid options are NA, EU, FE
         'endpoint' => env('SPAPI_ENDPOINT_REGION', 'NA'),
     ],
+
+    'debug' => env('SPAPI_DEBUG', false),
+    'debug_file' => env('SPAPI_DEBUG_FILE', 'php://output'),
 ];

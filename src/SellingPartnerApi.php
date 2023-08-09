@@ -88,9 +88,6 @@ final class SellingPartnerApi
      */
     public static function regionToEndpoint(string $region): array
     {
-        if (!in_array($region, static::REGIONS)) {
-            throw new InvalidArgumentException("Invalid SP API region: $region");
-        }
         return constant('SellingPartnerApi\Endpoint::' . $region);
     }
 }
