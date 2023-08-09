@@ -48,10 +48,6 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
      */
     public function register(): void
     {
-        if (!config('spapi.registration_enabled', true)) {
-            return;
-        }
-
         if (config('spapi.installation_type') === 'single') {
             $this->registerSingleSeller();
         } else {

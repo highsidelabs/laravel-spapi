@@ -21,13 +21,6 @@ return [
         'endpoint' => env('SPAPI_ENDPOINT_REGION', 'NA'),
     ],
 
-    /**
-     * This can serve as a security switch to entirely disable the registration of API classes
-     * for non-production environments. If enabled, acquiring instances of API classes may
-     * cause unintentional authorization-related requests using the provided credentials.
-     **/
-    'registration_enabled' => env('SPAPI_REGISTRATION_ENABLED', true),
-
     'debug' => env('SPAPI_DEBUG', false),
     'debug_file' => env('SPAPI_DEBUG_FILE', 'php://output'),
 ];
