@@ -158,13 +158,14 @@ class Credentials extends Model
         if (!is_null($cachedToken)) {
             $this->access_token = $cachedToken;
         } else {
+            $dynamicAws = config('spapi.aws.dynamic');
             $auth = new Authentication([
                 'lwaClientId' => $this->client_id,
                 'lwaClientSecret' => $this->client_secret,
                 'lwaRefreshToken' => $this->refresh_token,
-                'awsAccessKeyId' => config('spapi.aws.access_key_id'),
-                'awsSecretAccessKey' => config('spapi.aws.secret_access_key'),
-                'roleArn' => config('spapi.aws.role_arn'),
+                'awsAccessKeyId' => $dynamicAws ? $this->access_key_id : config('spapi.aws.access_key_id'),
+                'awsSecretAccessKey' => $dynamicAws ? $this->secret_access_key : config('spapi.aws.secret_access_key'),
+                'roleArn' => $dynamicAws ? $this->role_arn : config('spapi.aws.role_arn'),
                 'endpoint' => SellingPartnerApi::regionToEndpoint($this->region),
             ]);
 
