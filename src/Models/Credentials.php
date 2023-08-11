@@ -66,7 +66,7 @@ class Credentials extends Model
             'awsAccessKeyId' => $dynamicAws ? $this->access_key_id : config('spapi.aws.access_key_id'),
             'awsSecretAccessKey' => $dynamicAws ? $this->secret_access_key : config('spapi.aws.secret_access_key'),
             'roleArn' => $dynamicAws ? $this->role_arn : config('spapi.aws.role_arn'),
-            'endpoint' => SellingPartnerApi::regionToEndpoint($this->region),
+            'endpoint' => SellingPartnerApi::regionToEndpoint($this->handleRegion()),
             'accessToken' => $this->_getAccessToken(),
             'accessTokenExpiration' => $this->_getExpiresAt(),
         ]);
@@ -113,6 +113,17 @@ class Credentials extends Model
     public function seller(): BelongsTo
     {
         return $this->belongsTo(Seller::class);
+    }
+
+    /**
+     * Converts whatever the value of $this->region is to a region code string,
+     * used when determining which Selling Partner API endpoint to use.
+     *
+     * @return string
+     */
+    protected function handleRegion(): string
+    {
+        return $this->region;
     }
 
     /**
@@ -166,7 +177,7 @@ class Credentials extends Model
                 'awsAccessKeyId' => $dynamicAws ? $this->access_key_id : config('spapi.aws.access_key_id'),
                 'awsSecretAccessKey' => $dynamicAws ? $this->secret_access_key : config('spapi.aws.secret_access_key'),
                 'roleArn' => $dynamicAws ? $this->role_arn : config('spapi.aws.role_arn'),
-                'endpoint' => SellingPartnerApi::regionToEndpoint($this->region),
+                'endpoint' => SellingPartnerApi::regionToEndpoint($this->handleRegion()),
             ]);
 
             [$newAccessToken, $expiresTimestamp] = $auth->requestLWAToken();
