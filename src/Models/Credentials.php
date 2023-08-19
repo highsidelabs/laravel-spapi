@@ -106,6 +106,20 @@ class Credentials extends Model
     }
 
     /**
+     * Remove any cached access token info.
+     *
+     * @return static
+     */
+    public function bustCache(): static
+    {
+        Cache::forget($this->getAccessTokenCacheKey());
+        Cache::forget($this->getExpiresAtCacheKey());
+        $this->access_token = null;
+
+        return $this;
+    }
+
+    /**
      * Get the Seller that owns the Credentials.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -215,5 +229,21 @@ class Credentials extends Model
         }
 
         return $this->expires_at;
+    }
+
+    /**
+     * Perform any actions required after the model boots.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        // Bust the cache when the model is updated, in case the access token
+        // is no longer valid for the updated credentials.
+        static::updating(function (self $credentials) {
+            $credentials->bustCache();
+            $credentials->access_token = null;
+            $credentials->expires_at = null;
+        });
     }
 }
