@@ -25,7 +25,7 @@
         "illuminate/support": "^9.41|^10.0|^11.0",
         "illuminate/database": "^9.41|^10.0|^11.0",
         "illuminate/cache": "^9.41|^10.0|^11.0",
-        "jlevers/selling-partner-api": "^5.9"
+        "jlevers/selling-partner-api": "^7.0"
     },
     "autoload": {
         "psr-4": {

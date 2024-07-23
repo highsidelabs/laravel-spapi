@@ -2,11 +2,11 @@
 
 namespace HighsideLabs\LaravelSpApi;
 
-use HighsideLabs\LaravelSpApi\Configuration;
 use HighsideLabs\LaravelSpApi\Models\Credentials;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
-use SellingPartnerApi\Endpoint;
+use SellingPartnerApi\Seller\SellerConnector;
+use SellingPartnerApi\Vendor\VendorConnector;
 
 class SellingPartnerApiServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -49,9 +49,15 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
     public function register(): void
     {
         if (config('spapi.installation_type') === 'single') {
-            $this->registerSingleSeller();
-        } else {
-            $this->registerMultiSeller();
+            $creds = new Credentials([
+                'client_id' => config('spapi.single.lwa.client_id'),
+                'client_secret' => config('spapi.single.lwa.client_secret'),
+                'refresh_token' => config('spapi.single.lwa.refresh_token'),
+                'region' => config('spapi.single.endpoint'),
+            ]);
+
+            $this->app->bind(SellerConnector::class, fn () => $creds->sellerConnector());
+            $this->app->bind(VendorConnector::class, fn () => $creds->vendorConnector());
         }
     }
 
@@ -60,56 +66,12 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
      *
      * @return array
      */
-    public function provides()
+    public function provides(): array
     {
-        return SellingPartnerApi::API_CLASSES;
-    }
-
-    /**
-     * Register SP API classes for a single set of credentials.
-     *
-     * @return void
-     */
-    private function registerSingleSeller(): void
-    {
-        $creds = new Credentials([
-            'access_key_id' => config('spapi.aws.access_key_id'),
-            'secret_access_key' => config('spapi.aws.secret_access_key'),
-            'client_id' => config('spapi.single.lwa.client_id'),
-            'client_secret' => config('spapi.single.lwa.client_secret'),
-            'refresh_token' => config('spapi.single.lwa.refresh_token'),
-            'role_arn' => config('spapi.aws.role_arn'),
-            'region' => config('spapi.single.endpoint'),
-        ]);
-
-        foreach (SellingPartnerApi::API_CLASSES as $cls) {
-            $this->app->bind(
-                $cls,
-                // Converting creds inside the closure prevents errors on
-                // application boot due to missing env vars
-                fn () => new $cls($creds->toSpApiConfiguration())
-            );
+        if (config('spapi.installation_type') === 'single') {
+            return [SellerConnector::class, VendorConnector::class];
         }
-    }
 
-    /**
-     * Register SP API classes for multiple sets of credentials.
-     *
-     * @return  void
-     */
-    private function registerMultiSeller(): void
-    {
-        foreach (SellingPartnerApi::API_CLASSES as $cls) {
-            $placeholderConfig = new Configuration(true, [
-                'lwaClientId' => 'PLACEHOLDER',
-                'lwaClientSecret' => 'PLACEHOLDER',
-                'lwaRefreshToken' => 'PLACEHOLDER',
-                'roleArn' => 'PLACEHOLDER',
-                'awsAccessKeyId' => 'PLACEHOLDER',
-                'awsSecretAccessKey' => 'PLACEHOLDER',
-                'endpoint' => Endpoint::NA,
-            ]);
-            $this->app->bind($cls, fn () => new $cls($placeholderConfig));
-        }
+        return [];
     }
 }
