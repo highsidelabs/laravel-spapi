@@ -36,7 +36,7 @@ class Credentials extends Model
             clientId: $this->client_id,
             clientSecret: $this->client_secret,
             refreshToken: $this->refresh_token,
-            endpoint: Endpoint::fromRegion($this->region),
+            endpoint: Endpoint::byRegion($this->region),
             dataElements: $dataElements,
             delegatee: $delegatee,
             authenticationClient: $authenticationClient,
@@ -60,7 +60,7 @@ class Credentials extends Model
             clientId: $this->client_id,
             clientSecret: $this->client_secret,
             refreshToken: $this->refresh_token,
-            endpoint: Endpoint::fromRegion($this->region),
+            endpoint: Endpoint::byRegion($this->region),
             dataElements: $dataElements,
             delegatee: $delegatee,
             authenticationClient: $authenticationClient,
@@ -74,8 +74,6 @@ class Credentials extends Model
 
     /**
      * Get the Seller that owns the Credentials.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function seller(): BelongsTo
     {
@@ -88,7 +86,7 @@ class Credentials extends Model
     protected static function debug(SellingPartnerApi $connector): void
     {
         if (config('spapi.debug')) {
-            if (config('spapi.debug_file') !== null) {
+            if (config('spapi.debug_file')) {
                 $connector->debugToFile(config('spapi.debug_file'));
             } else {
                 $connector->debug();
@@ -98,8 +96,6 @@ class Credentials extends Model
 
     /**
      * Perform any actions required after the model boots.
-     *
-     * @return void
      */
     protected static function booted(): void
     {
