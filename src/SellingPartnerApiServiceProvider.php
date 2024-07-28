@@ -12,23 +12,21 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
 {
     /**
      * Bootstrap the application events.
-     *
-     * @return void
      */
     public function boot(): void
     {
         // Publish config file
         $this->publishes([
-            __DIR__ . '/../config/spapi.php' => config_path('spapi.php'),
+            __DIR__.'/../config/spapi.php' => config_path('spapi.php'),
         ], 'config');
 
         // Publish sellers and spapi_credentials migrations
         $time = time();
-        $sellersMigrationFile = date('Y_m_d_His', $time) . '_create_spapi_sellers_table.php';
-        $credentialsMigrationFile = date('Y_m_d_His', $time + 1) . '_create_spapi_credentials_table.php';
+        $sellersMigrationFile = date('Y_m_d_His', $time).'_create_spapi_sellers_table.php';
+        $credentialsMigrationFile = date('Y_m_d_His', $time + 1).'_create_spapi_credentials_table.php';
         $this->publishes([
-            __DIR__ . '/../database/migrations/create_spapi_sellers_table.php.stub' => database_path('migrations/' . $sellersMigrationFile),
-            __DIR__ . '/../database/migrations/create_spapi_credentials_table.php.stub' => database_path('migrations/' . $credentialsMigrationFile),
+            __DIR__.'/../database/migrations/create_spapi_sellers_table.php.stub' => database_path('migrations/'.$sellersMigrationFile),
+            __DIR__.'/../database/migrations/create_spapi_credentials_table.php.stub' => database_path('migrations/'.$credentialsMigrationFile),
         ], 'multi');
 
         // Don't offer the option to publish the AWS migration unless this is a multi-seller installation with dynamic AWS
@@ -43,8 +41,6 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
 
     /**
      * Register bindings in the container.
-     *
-     * @return void
      */
     public function register(): void
     {
@@ -63,8 +59,6 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
 
     /**
      * Get the services provided by the provider.
-     *
-     * @return array
      */
     public function provides(): array
     {
