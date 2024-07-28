@@ -31,11 +31,8 @@ class UpgradeToSpApiWrapperV2 extends Migration
      */
     public function down(): void
     {
-        DB::
-        Schema::table('spapi_credentials', function (Blueprint $table) {
-            $table->dropColumn('access_key_id');
-            $table->dropColumn('secret_access_key');
-            $table->dropColumn('role_arn');
-        });
+        // Since the AWS columns were config-dependent to begin with, and the config
+        // option that determined their presence is deprecated, we're not defining
+        // a down migration.
     }
 }
