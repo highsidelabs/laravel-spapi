@@ -16,26 +16,24 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
     public function boot(): void
     {
         // Publish config file
-        $this->publishes([
-            __DIR__.'/../config/spapi.php' => config_path('spapi.php'),
-        ], 'config');
+        $this->publishes([__DIR__.'/../config/spapi.php' => config_path('spapi.php')]);
 
-        // Publish sellers and spapi_credentials migrations
-        $time = time();
-        $sellersMigrationFile = date('Y_m_d_His', $time).'_create_spapi_sellers_table.php';
-        $credentialsMigrationFile = date('Y_m_d_His', $time + 1).'_create_spapi_credentials_table.php';
-        $this->publishes([
-            __DIR__.'/../database/migrations/create_spapi_sellers_table.php.stub' => database_path('migrations/'.$sellersMigrationFile),
-            __DIR__.'/../database/migrations/create_spapi_credentials_table.php.stub' => database_path('migrations/'.$credentialsMigrationFile),
-        ], 'multi');
+        // Publish spapi_sellers and spapi_credentials migrations
+        $migrationsDir = __DIR__.'/../database/migrations';
+        $sellersMigrationFile = 'create_spapi_sellers_table.php';
+        $credentialsMigrationFile = 'create_spapi_credentials_table.php';
+        $this->publishesMigrations([
+            "$migrationsDir/$sellersMigrationFile" => database_path("migrations/$sellersMigrationFile"),
+            "$migrationsDir/$credentialsMigrationFile" => database_path("migrations/$credentialsMigrationFile"),
+        ], 'spapi-migrations');
 
-        // Don't offer the option to publish the AWS migration unless this is a multi-seller installation with dynamic AWS
-        // credentials
+        // Don't offer the option to publish the package version upgrade migration unless this is a multi-seller
+        // installation that was using dynamic AWS credentials (a feature that is now deprecated/irrelevant)
         if (config('spapi.installation_type') === 'multi' && config('spapi.aws.dynamic')) {
-            $awsMigrationFile = date('Y_m_d_His', $time + 2) . '_add_aws_fields_to_spapi_credentials_table.php';
-            $this->publishes([
-                __DIR__ . '/../database/migrations/add_aws_fields_to_spapi_credentials_table.php.stub' => database_path('migrations/' . $awsMigrationFile),
-            ], 'add-aws');
+            $v2MigrationFile = 'upgrade_to_laravel_spapi_v2.php';
+            $this->publishesMigrations([
+                "$migrationsDir/$v2MigrationFile" => database_path("migrations/$v2MigrationFile"),
+            ], 'spapi-v2-upgrade');
         }
     }
 
