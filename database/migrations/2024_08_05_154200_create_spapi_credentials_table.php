@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSpApiCredentialsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -40,7 +40,7 @@ class CreateSpApiCredentialsTable extends Migration
 
             // The seller these credentials are associated with
             $table->foreignId('seller_id')->constrained('spapi_sellers');
-        );
+        });
     }
 
     /**
@@ -52,4 +52,4 @@ class CreateSpApiCredentialsTable extends Migration
     {
         Schema::drop('spapi_credentials');
     }
-}
+};

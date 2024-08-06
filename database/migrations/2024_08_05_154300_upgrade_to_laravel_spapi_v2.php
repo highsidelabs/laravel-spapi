@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class UpgradeToSpApiWrapperV2 extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,15 @@ class UpgradeToSpApiWrapperV2 extends Migration
      */
     public function up(): void
     {
-        Schema::table('spapi_credentials', function (Blueprint $table) {
-            $dropColumns = ['access_key_id', 'secret_access_key', 'role_arn'];
+        $dropColumns = ['access_key_id', 'secret_access_key', 'role_arn'];
 
-            foreach ($dropColumns as $col) {
-                if (Schema::hasColumn('spapi_credentials', $col) {
+        foreach ($dropColumns as $col) {
+            if (Schema::hasColumn('spapi_credentials', $col)) {
+                Schema::table('spapi_credentials', function (Blueprint $table) use ($col) {
                     $table->dropColumn($col);
-                }
+                });
             }
-        });
+        }
     }
 
     /**
@@ -35,4 +35,4 @@ class UpgradeToSpApiWrapperV2 extends Migration
         // option that determined their presence is deprecated, we're not defining
         // a down migration.
     }
-}
+};
