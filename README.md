@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://highsidelabs.co" target="_blank">
-        <img src="https://github.com/highsidelabs/.github/blob/main/images/logo.png?raw=true" width="125">
+        <img src="https://github.com/highsidelabs/.github/blob/main/images/logo.png?raw=true" width="125" alt="Highside Labs logo">
     </a>
 </p>
 
@@ -65,7 +65,7 @@ This library has two modes:
 1. Publish the config file:
 
 ```bash
-$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="config"
+$ php artisan vendor:publish --tag="spapi-config"
 ```
 
 2. Add these environment variables to your `.env`:
@@ -83,7 +83,7 @@ Set `SPAPI_ENDPOINT_REGION` to the region code for the endpoint you want to use 
 
 ### Usage
 
-All of the API classes supported by [jlevers/selling-partner-api](https://github.com/jlevers/selling-partner-api#supported-api-segments) can be type-hinted. This example assumes you have access to the `Selling Partner Insights` role in your SP API app configuration (so that you can call `SellersV1Api::getMarketplaceParticipations()`), but the same principle applies to type-hinting any other Selling Partner API class.
+`SellerConnector` and `VendorConnector` can be type-hinted, and the connector classes can be used to create instances of all APIs supported by [jlevers/selling-partner-api](https://github.com/jlevers/selling-partner-api#supported-api-segments). This example assumes you have access to the `Selling Partner Insights` role in your SP API app configuration (so that you can call `SellingPartnerApi\Seller\SellersV1\Api::getMarketplaceParticipations()`), _but the same principle applies to calling any other Selling Partner API endpoint._
 
 ```php
 use Illuminate\Http\JsonResponse;
@@ -115,7 +115,7 @@ class SpApiController extends Controller
 
 ```bash
 # Publish config/spapi.php file
-$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="config"
+$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider"
 ```
 
 2. Change the `installation_type` in `config/spapi.php` to `multi`.
@@ -124,7 +124,7 @@ $ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartne
 
 ```bash
 # Publish migrations to database/migrations/
-$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="multi"
+$ php artisan vendor:publish --tag="spapi-multi-seller"
 ```
 
 
@@ -139,10 +139,11 @@ $ php artisan migrate
 First you'll need to create a `Seller`, and some `Credentials` for that seller. The `Seller` and `Credentials` models work just like any other Laravel model.
 
 ```php
-use HighsideLabs\LaravelSpApi\Models;
+use HighsideLabs\LaravelSpApi\Models\Credentials;
+use HighsideLabs\LaravelSpApi\Models\Seller;
 
-$seller = Models\Seller::create(['name' => 'MySeller']);
-$credentials = Models\Credentials::create([
+$seller = Seller::create(['name' => 'My Seller']);
+$credentials = Credentials::create([
     'seller_id' => $seller->id,
     // You can find your selling partner ID/merchant ID by going to
     // https://<regional-seller-central-domain>/sw/AccountInfo/MerchantToken/step/MerchantToken
