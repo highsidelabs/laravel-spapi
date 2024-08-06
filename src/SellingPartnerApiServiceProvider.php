@@ -3,12 +3,11 @@
 namespace HighsideLabs\LaravelSpApi;
 
 use HighsideLabs\LaravelSpApi\Models\Credentials;
-use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
 use SellingPartnerApi\Seller\SellerConnector;
 use SellingPartnerApi\Vendor\VendorConnector;
 
-class SellingPartnerApiServiceProvider extends ServiceProvider implements DeferrableProvider
+class SellingPartnerApiServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application events.
@@ -20,17 +19,17 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
 
         // Publish spapi_sellers and spapi_credentials migrations
         $migrationsDir = __DIR__.'/../database/migrations';
-        $sellersMigrationFile = 'create_spapi_sellers_table.php';
-        $credentialsMigrationFile = 'create_spapi_credentials_table.php';
+        $sellersMigrationFile = '2024_08_05_154100_create_spapi_sellers_table.php';
+        $credentialsMigrationFile = '2024_08_05_154200_create_spapi_credentials_table.php';
         $this->publishesMigrations([
             "$migrationsDir/$sellersMigrationFile" => database_path("migrations/$sellersMigrationFile"),
             "$migrationsDir/$credentialsMigrationFile" => database_path("migrations/$credentialsMigrationFile"),
-        ], 'spapi-migrations');
+        ], 'spapi-multi-seller');
 
         // Don't offer the option to publish the package version upgrade migration unless this is a multi-seller
         // installation that was using dynamic AWS credentials (a feature that is now deprecated/irrelevant)
         if (config('spapi.installation_type') === 'multi' && config('spapi.aws.dynamic')) {
-            $v2MigrationFile = 'upgrade_to_laravel_spapi_v2.php';
+            $v2MigrationFile = '2024_08_05_154300_upgrade_to_laravel_spapi_v2.php';
             $this->publishesMigrations([
                 "$migrationsDir/$v2MigrationFile" => database_path("migrations/$v2MigrationFile"),
             ], 'spapi-v2-upgrade');
@@ -49,21 +48,11 @@ class SellingPartnerApiServiceProvider extends ServiceProvider implements Deferr
                 'refresh_token' => config('spapi.single.lwa.refresh_token'),
                 'region' => config('spapi.single.endpoint'),
             ]);
+            // To give the cache an ID to work with
+            $creds->id = 1;
 
             $this->app->bind(SellerConnector::class, fn () => $creds->sellerConnector());
             $this->app->bind(VendorConnector::class, fn () => $creds->vendorConnector());
         }
-    }
-
-    /**
-     * Get the services provided by the provider.
-     */
-    public function provides(): array
-    {
-        if (config('spapi.installation_type') === 'single') {
-            return [SellerConnector::class, VendorConnector::class];
-        }
-
-        return [];
     }
 }
