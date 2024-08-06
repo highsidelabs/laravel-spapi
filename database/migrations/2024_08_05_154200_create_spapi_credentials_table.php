@@ -1,16 +1,14 @@
 <?php
 
-use HighsideLabs\LaravelSpApi\SellingPartnerApi;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use SellingPartnerApi\Enums\Region;
 
-class CreateSpApiCredentialsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
@@ -30,7 +28,7 @@ class CreateSpApiCredentialsTable extends Migration
             $table->string('selling_partner_id')->unique();
 
             // The SP API region that these credentials are for
-            $table->enum('region', SellingPartnerApi::REGIONS);
+            $table->enum('region', Region::values());
 
             // The app credentials that the the refresh token was created with
             $table->string('client_id');
@@ -40,26 +38,14 @@ class CreateSpApiCredentialsTable extends Migration
 
             // The seller these credentials are associated with
             $table->foreignId('seller_id')->constrained('spapi_sellers');
-
-            // If SP API calls will only be happening with a single set of AWS credentials (meaning
-            // all the credentials are authorized on the same application), these columns will be
-            // skipped. Otherwise, they are needed to specify the AWS keys for each set of credentials.
-            if (config('spapi.aws.dynamic')) {
-                $table->string('access_key_id');
-                $table->string('secret_access_key');
-                $table->string('role_arn')->nullable();
-            }
         });
-
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {
         Schema::drop('spapi_credentials');
     }
-}
+};

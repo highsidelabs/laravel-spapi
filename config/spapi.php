@@ -3,13 +3,6 @@
 return [
     'installation_type' => 'single',
 
-    'aws' => [
-        'dynamic' => false,
-        'access_key_id' => env('SPAPI_AWS_ACCESS_KEY_ID'),
-        'secret_access_key' => env('SPAPI_AWS_SECRET_ACCESS_KEY'),
-        'role_arn' => env('SPAPI_AWS_ROLE_ARN'),
-    ],
-
     'single' => [
         'lwa' => [
             'client_id' => env('SPAPI_LWA_CLIENT_ID'),
@@ -22,5 +15,5 @@ return [
     ],
 
     'debug' => env('SPAPI_DEBUG', false),
-    'debug_file' => env('SPAPI_DEBUG_FILE', 'php://output'),
+    'debug_file' => env('SPAPI_DEBUG_FILE'),
 ];

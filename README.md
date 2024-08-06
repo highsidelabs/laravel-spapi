@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://highsidelabs.co" target="_blank">
-        <img src="https://github.com/highsidelabs/.github/blob/main/images/logo.png?raw=true" width="125">
+        <img src="https://github.com/highsidelabs/.github/blob/main/images/logo.png?raw=true" width="125" alt="Highside Labs logo">
     </a>
 </p>
 
@@ -65,46 +65,42 @@ This library has two modes:
 1. Publish the config file:
 
 ```bash
-$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="config"
+$ php artisan vendor:publish --tag="spapi-config"
 ```
 
 2. Add these environment variables to your `.env`:
 
 ```env
-SPAPI_AWS_ACCESS_KEY_ID=
-SPAPI_AWS_SECRET_ACCESS_KEY=
 SPAPI_LWA_CLIENT_ID=
 SPAPI_LWA_CLIENT_SECRET=
 SPAPI_LWA_REFRESH_TOKEN=
 
 # Optional
-# SPAPI_AWS_ROLE_ARN=
 # SPAPI_ENDPOINT_REGION=
 ```
 
-If in Seller Central, you configured your SP API app with an IAM role ARN rather than an IAM user ARN, you'll need to put that ARN in the `SPAPI_AWS_ROLE_ARN` environment variable. Otherwise, you can leave it blank. Set `SPAPI_ENDPOINT_REGION` to the region code for the endpoint you want to use (EU for Europe, FE for Far East, or NA for North America).
-
-You're ready to go!
+Set `SPAPI_ENDPOINT_REGION` to the region code for the endpoint you want to use (EU for Europe, FE for Far East, or NA for North America). The default is North America.
 
 ### Usage
 
-All of the API classes supported by [jlevers/selling-partner-api](https://github.com/jlevers/selling-partner-api#supported-api-segments) can be type-hinted. This example assumes you have access to the `Selling Partner Insights` role in your SP API app configuration (so that you can call `SellersV1Api::getMarketplaceParticipations()`), but the same principle applies to type-hinting any other Selling Partner API class.
+`SellerConnector` and `VendorConnector` can be type-hinted, and the connector classes can be used to create instances of all APIs supported by [jlevers/selling-partner-api](https://github.com/jlevers/selling-partner-api#supported-api-segments). This example assumes you have access to the `Selling Partner Insights` role in your SP API app configuration (so that you can call `SellingPartnerApi\Seller\SellersV1\Api::getMarketplaceParticipations()`), _but the same principle applies to calling any other Selling Partner API endpoint._
 
 ```php
 use Illuminate\Http\JsonResponse;
-use SellingPartnerApi\Api\SellersV1Api as SellersApi;
-use SellingPartnerApi\ApiException;
+use Saloon\Exceptions\Request\RequestException;
+use SellingPartnerApi\Seller\SellerConnector;
 
 class SpApiController extends Controller
 {
-    public function index(SellersApi $api): JsonResponse
+    public function index(SellerConnector $connector): JsonResponse
     {
         try {
+            $api = $connector->sellersV1();
             $result = $api->getMarketplaceParticipations();
-            return response()->json($result);
-        } catch (ApiException $e) {
-            $jsonBody = json_decode($e->getResponseBody());
-            return response()->json($jsonBody, $e->getCode());
+            return response()->json($result->json());
+        } catch (RequestException $e) {
+            $response = $e->getResponse();
+            return response()->json($response->json(), $e->getStatus());
         }
     }
 }
@@ -119,18 +115,16 @@ class SpApiController extends Controller
 
 ```bash
 # Publish config/spapi.php file
-$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="config"
+$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider"
 ```
 
-2. Update the configuration to support multi-seller usage.
-    * Change the `installation_type` in `config/spapi.php` to `multi`.
-    * If the different sets of seller credentials you plan to use aren't all associated with the same set of AWS credentials (access key ID, secret access key, and optionally role ARN), make sure to change the `aws.dynamic` key to true. If you don't make that change before running migrations (the next step), the fields for AWS credentials won't be added to the database. (If you're not sure if this change applies to you, it probably doesn't.)
+2. Change the `installation_type` in `config/spapi.php` to `multi`.
 
 3. Publish the multi-seller migrations:
 
 ```bash
 # Publish migrations to database/migrations/
-$ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider" --tag="multi"
+$ php artisan vendor:publish --tag="spapi-multi-seller"
 ```
 
 
@@ -140,22 +134,16 @@ $ php artisan vendor:publish --provider="HighsideLabs\LaravelSpApi\SellingPartne
 $ php artisan migrate
 ```
 
-5. Add these environment variables to your `.env` (unless you changed the `aws.dynamic` configuration flag to `true` in step 2):
-
-```env
-SPAPI_AWS_ACCESS_KEY_ID=
-SPAPI_AWS_SECRET_ACCESS_KEY=
-```
-
 ### Usage
 
 First you'll need to create a `Seller`, and some `Credentials` for that seller. The `Seller` and `Credentials` models work just like any other Laravel model.
 
 ```php
-use HighsideLabs\LaravelSpApi\Models;
+use HighsideLabs\LaravelSpApi\Models\Credentials;
+use HighsideLabs\LaravelSpApi\Models\Seller;
 
-$seller = Models\Seller::create(['name' => 'MySeller']);
-$credentials = Models\Credentials::create([
+$seller = Seller::create(['name' => 'My Seller']);
+$credentials = Credentials::create([
     'seller_id' => $seller->id,
     // You can find your selling partner ID/merchant ID by going to
     // https://<regional-seller-central-domain>/sw/AccountInfo/MerchantToken/step/MerchantToken
@@ -167,52 +155,36 @@ $credentials = Models\Credentials::create([
     'client_secret' => 'fec9/aw....',
     // The LWA refresh token for this seller
     'refresh_token' => 'IWeB|....',
-
-    // If you have the `aws.dynamic` config flag set to true, you'll also need these attributes:
-    // 'access_key_id' => 'AKIA....',
-    // 'secret_access_key' => '23pasdf....',
-    // // Only necessary if you configured your SP API setup with an IAM role ARN, otherwise can be omitted
-    // // 'role_arn' => 'arn:aws:iam::....',  
 ]);
 ```
 
-Once you have credentials in the database, you can use them like this:
+Once you have credentials in the database, you can use them to retrieve a `SellerConnector`  instance, from which you can get an instance of any seller API:
 
 ```php
 use HighsideLabs\LaravelSpApi\Models\Credentials;
 use Illuminate\Http\JsonResponse;
-use SellingPartnerApi\Api\SellersV1Api as SellersApi;
-use SellingPartnerApi\ApiException;
+use Saloon\Exceptions\Request\RequestException;
 
-class SpApiController extends Controller
-{
-    public function __construct(SellersApi $api)
-    {
-        // Retrieve the credentials we just created
-        $creds = Credentials::first();
-        $this->api = $creds->useOn($api);
-        // You can now make calls to the SP API with $creds using $this->api!
-    }
+$creds = Credentials::first();
+/** @var SellingPartnerApi\Seller\SellersV1\Api $api */
+$api = $creds->sellerConnector()->sellersV1();
 
-    public function index(): JsonResponse
-    {
-        try {
-            $result = $this->api->getMarketplaceParticipations();
-            return response()->json($result);
-        } catch (ApiException $e) {
-            $jsonBody = json_decode($e->getResponseBody());
-            return response()->json($jsonBody, $e->getCode());
-        }
-    }
+try {
+    $result = $api->getMarketplaceParticipations();
+    $dto = $result->dto();
+} catch (RequestException $e) {
+    $responseBody = $e->getResponse()->json();
 }
 ```
 
-Or, if you want to use a Selling Partner API class without auto-injecting it, you can quickly create one like this:
+The same goes for a `VendorConnector` instance:
 
 ```php
-use HighsideLabs\LaravelSpApi\SellingPartnerApi;
-use SellingPartnerApi\Api\SellersV1Api as SellersApi;
+use HighsideLabs\LaravelSpApi\Models\Credentials;
+use Illuminate\Http\JsonResponse;
+use Saloon\Exceptions\Request\RequestException;
 
 $creds = Credentials::first();
-$api = SellingPartnerApi::makeApi(SellersApi::class, $creds);
+/** @var SellingPartnerApi\Vendor\DirectFulfillmentShippingV1\Api $api */
+$api = $creds->vendorConnector()->directFulfillmentShippingV1();
 ```

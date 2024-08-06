@@ -2,114 +2,57 @@
 
 namespace HighsideLabs\LaravelSpApi;
 
-use HighsideLabs\LaravelSpApi\Configuration;
 use HighsideLabs\LaravelSpApi\Models\Credentials;
-use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;
-use SellingPartnerApi\Endpoint;
+use SellingPartnerApi\Seller\SellerConnector;
+use SellingPartnerApi\Vendor\VendorConnector;
 
-class SellingPartnerApiServiceProvider extends ServiceProvider implements DeferrableProvider
+class SellingPartnerApiServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application events.
-     *
-     * @return void
      */
     public function boot(): void
     {
         // Publish config file
-        $this->publishes([
-            __DIR__ . '/../config/spapi.php' => config_path('spapi.php'),
-        ], 'config');
+        $this->publishes([__DIR__.'/../config/spapi.php' => config_path('spapi.php')]);
 
-        // Publish sellers and spapi_credentials migrations
-        $time = time();
-        $sellersMigrationFile = date('Y_m_d_His', $time) . '_create_spapi_sellers_table.php';
-        $credentialsMigrationFile = date('Y_m_d_His', $time + 1) . '_create_spapi_credentials_table.php';
-        $this->publishes([
-            __DIR__ . '/../database/migrations/create_spapi_sellers_table.php.stub' => database_path('migrations/' . $sellersMigrationFile),
-            __DIR__ . '/../database/migrations/create_spapi_credentials_table.php.stub' => database_path('migrations/' . $credentialsMigrationFile),
-        ], 'multi');
+        // Publish spapi_sellers and spapi_credentials migrations
+        $migrationsDir = __DIR__.'/../database/migrations';
+        $sellersMigrationFile = '2024_08_05_154100_create_spapi_sellers_table.php';
+        $credentialsMigrationFile = '2024_08_05_154200_create_spapi_credentials_table.php';
+        $this->publishesMigrations([
+            "$migrationsDir/$sellersMigrationFile" => database_path("migrations/$sellersMigrationFile"),
+            "$migrationsDir/$credentialsMigrationFile" => database_path("migrations/$credentialsMigrationFile"),
+        ], 'spapi-multi-seller');
 
-        // Don't offer the option to publish the AWS migration unless this is a multi-seller installation with dynamic AWS
-        // credentials
+        // Don't offer the option to publish the package version upgrade migration unless this is a multi-seller
+        // installation that was using dynamic AWS credentials (a feature that is now deprecated/irrelevant)
         if (config('spapi.installation_type') === 'multi' && config('spapi.aws.dynamic')) {
-            $awsMigrationFile = date('Y_m_d_His', $time + 2) . '_add_aws_fields_to_spapi_credentials_table.php';
-            $this->publishes([
-                __DIR__ . '/../database/migrations/add_aws_fields_to_spapi_credentials_table.php.stub' => database_path('migrations/' . $awsMigrationFile),
-            ], 'add-aws');
+            $v2MigrationFile = '2024_08_05_154300_upgrade_to_laravel_spapi_v2.php';
+            $this->publishesMigrations([
+                "$migrationsDir/$v2MigrationFile" => database_path("migrations/$v2MigrationFile"),
+            ], 'spapi-v2-upgrade');
         }
     }
 
     /**
      * Register bindings in the container.
-     *
-     * @return void
      */
     public function register(): void
     {
         if (config('spapi.installation_type') === 'single') {
-            $this->registerSingleSeller();
-        } else {
-            $this->registerMultiSeller();
-        }
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return SellingPartnerApi::API_CLASSES;
-    }
-
-    /**
-     * Register SP API classes for a single set of credentials.
-     *
-     * @return void
-     */
-    private function registerSingleSeller(): void
-    {
-        $creds = new Credentials([
-            'access_key_id' => config('spapi.aws.access_key_id'),
-            'secret_access_key' => config('spapi.aws.secret_access_key'),
-            'client_id' => config('spapi.single.lwa.client_id'),
-            'client_secret' => config('spapi.single.lwa.client_secret'),
-            'refresh_token' => config('spapi.single.lwa.refresh_token'),
-            'role_arn' => config('spapi.aws.role_arn'),
-            'region' => config('spapi.single.endpoint'),
-        ]);
-
-        foreach (SellingPartnerApi::API_CLASSES as $cls) {
-            $this->app->bind(
-                $cls,
-                // Converting creds inside the closure prevents errors on
-                // application boot due to missing env vars
-                fn () => new $cls($creds->toSpApiConfiguration())
-            );
-        }
-    }
-
-    /**
-     * Register SP API classes for multiple sets of credentials.
-     *
-     * @return  void
-     */
-    private function registerMultiSeller(): void
-    {
-        foreach (SellingPartnerApi::API_CLASSES as $cls) {
-            $placeholderConfig = new Configuration(true, [
-                'lwaClientId' => 'PLACEHOLDER',
-                'lwaClientSecret' => 'PLACEHOLDER',
-                'lwaRefreshToken' => 'PLACEHOLDER',
-                'roleArn' => 'PLACEHOLDER',
-                'awsAccessKeyId' => 'PLACEHOLDER',
-                'awsSecretAccessKey' => 'PLACEHOLDER',
-                'endpoint' => Endpoint::NA,
+            $creds = new Credentials([
+                'client_id' => config('spapi.single.lwa.client_id'),
+                'client_secret' => config('spapi.single.lwa.client_secret'),
+                'refresh_token' => config('spapi.single.lwa.refresh_token'),
+                'region' => config('spapi.single.endpoint'),
             ]);
-            $this->app->bind($cls, fn () => new $cls($placeholderConfig));
+            // To give the cache an ID to work with
+            $creds->id = 1;
+
+            $this->app->bind(SellerConnector::class, fn () => $creds->sellerConnector());
+            $this->app->bind(VendorConnector::class, fn () => $creds->vendorConnector());
         }
     }
 }

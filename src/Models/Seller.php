@@ -13,8 +13,6 @@ class Seller extends Model
 
     /**
      * Get all the Credentials connected to this Seller
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function credentials(): HasMany
     {
