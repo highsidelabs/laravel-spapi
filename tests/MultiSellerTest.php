@@ -12,16 +12,15 @@ use SellingPartnerApi\Vendor\DirectFulfillmentShippingV1;
 
 class MultiSellerTest extends TestCase
 {
-    private Seller $seller;
-    private Credentials $credentials;
+    private Credentials $creds;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->seller = Seller::create(['name' => 'seller-1']);
+        $seller = Seller::create(['name' => 'seller-1']);
         $this->creds = Credentials::create([
-            'seller_id' => $this->seller->id,
+            'seller_id' => $seller->id,
             'selling_partner_id' => 'spapi01',
             'client_id' => 'client-id-1',
             'client_secret' => 'client-secret-1',
