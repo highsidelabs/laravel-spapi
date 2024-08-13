@@ -15,7 +15,7 @@ class SellingPartnerApiServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Publish config file
-        $this->publishes([__DIR__.'/../config/spapi.php' => config_path('spapi.php')]);
+        $this->publishes([__DIR__.'/../config/spapi.php' => config_path('spapi.php')], 'spapi-config');
 
         // Publish spapi_sellers and spapi_credentials migrations
         $migrationsDir = __DIR__.'/../database/migrations';
