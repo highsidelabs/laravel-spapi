@@ -23,7 +23,12 @@ class Cache implements TokenCache
 
     public function get(string $key): AccessTokenAuthenticator|false
     {
-        $token = LaravelCache::tags([self::TAG, $this->credsTag])->get($key);
+        if (self::isTaggableCache()) {
+            $token = LaravelCache::tags([self::TAG, $this->credsTag])->get($key);
+        } else {
+            $token = LaravelCache::get($key);
+        }
+
         if (! $token) {
             return false;
         }
@@ -34,7 +39,11 @@ class Cache implements TokenCache
     public function set(string $key, AccessTokenAuthenticator $authenticator): void
     {
         $ttl = $authenticator->getExpiresAt()->getTimestamp() - (new DateTimeImmutable)->getTimestamp();
-        LaravelCache::tags([self::TAG, $this->credsTag])->put($key, serialize($authenticator), $ttl);
+        if (self::isTaggableCache()) {
+            LaravelCache::tags([self::TAG, $this->credsTag])->put($key, serialize($authenticator), $ttl);
+        } else {
+            LaravelCache::put($key, serialize($authenticator), $ttl);
+        }
     }
 
     public function forget(string $key): void
