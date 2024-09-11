@@ -26,6 +26,11 @@ class SellingPartnerApiServiceProvider extends ServiceProvider
             "$migrationsDir/$credentialsMigrationFile" => database_path("migrations/$credentialsMigrationFile"),
         ], 'spapi-multi-seller');
 
+        $dbCacheMigrationFile = '2024_09_11_135400_increase_cache_value_size.php';
+        $this->publishesMigrations([
+            "$migrationsDir/$dbCacheMigrationFile" => database_path("migrations/$dbCacheMigrationFile"),
+        ], 'spapi-database-cache');
+
         // Don't offer the option to publish the package version upgrade migration unless this is a multi-seller
         // installation that was using dynamic AWS credentials (a feature that is now deprecated/irrelevant)
         if (config('spapi.installation_type') === 'multi' && config('spapi.aws.dynamic')) {

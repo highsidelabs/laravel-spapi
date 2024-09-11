@@ -49,6 +49,7 @@ $ composer require highsidelabs/laravel-spapi
 * [Multi-seller mode](#multi-seller-mode)
     * [Setup](#setup-1)
     * [Usage](#usage-1)
+* [Troubleshooting](#troubleshooting)
 
 ------
 
@@ -187,4 +188,13 @@ use Saloon\Exceptions\Request\RequestException;
 $creds = Credentials::first();
 /** @var SellingPartnerApi\Vendor\DirectFulfillmentShippingV1\Api $api */
 $api = $creds->vendorConnector()->directFulfillmentShippingV1();
+```
+
+## Troubleshooting
+
+If you encounter an error like `String data, right truncated: 7 ERROR:  value too long for type character varying(255)`, it's probably because you're using Laravel's database cache, which by default has a 255-character limit on cache values. This library has a migration available to fix this:
+
+```bash
+$ php artisan vendor:publish --tag="spapi-database-cache"
+$ php artisan migrate
 ```
