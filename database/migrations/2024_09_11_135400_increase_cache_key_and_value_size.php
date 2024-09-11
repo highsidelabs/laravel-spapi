@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('cache', function (Blueprint $table) {
-            $table->string('value', 511)->change();
+            $table->string('key', 511)->change();
+            $table->string('value', 1023)->change();
         });
     }
 
@@ -24,6 +25,7 @@ return new class extends Migration
         Schema::table('cache', function (Blueprint $table) {
             // This will throw an error if there are values longer than 255 characters in the cache table,
             // but if we automatically truncated them there would be silent data loss
+            $table->string('key', 255)->change();
             $table->string('value', 255)->change();
         });
     }

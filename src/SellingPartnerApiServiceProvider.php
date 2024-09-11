@@ -26,7 +26,7 @@ class SellingPartnerApiServiceProvider extends ServiceProvider
             "$migrationsDir/$credentialsMigrationFile" => database_path("migrations/$credentialsMigrationFile"),
         ], 'spapi-multi-seller');
 
-        $dbCacheMigrationFile = '2024_09_11_135400_increase_cache_value_size.php';
+        $dbCacheMigrationFile = '2024_09_11_135400_increase_cache_key_and_value_size.php';
         $this->publishesMigrations([
             "$migrationsDir/$dbCacheMigrationFile" => database_path("migrations/$dbCacheMigrationFile"),
         ], 'spapi-database-cache');
