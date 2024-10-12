@@ -40,7 +40,7 @@ _There is a more in-depth guide to using this package [on our blog](https://high
 $ composer require highsidelabs/laravel-spapi
 ```
 
-## Table of Contents 
+## Table of Contents
 
 * [Overview](#overview)
 * [Single-seller mode](#single-seller-mode)
@@ -158,6 +158,9 @@ $credentials = Credentials::create([
     'refresh_token' => 'IWeB|....',
 ]);
 ```
+
+> [!NOTE]
+> `client_id` and `client_secret` are nullable. If you are authorizing multiple sellers on a single SP API application, they will all use the same client ID and client secret. If you leave `client_id` and `client_secret` empty, the library will try to load those values from the `SPAPI_LWA_CLIENT_ID` and `SPAPI_LWA_CLIENT_SECRET` environment variables that are used in [single-seller mode](#single-seller-mode). That means that the single-seller credentials can effectively be used as master credentials in multi-seller mode.
 
 Once you have credentials in the database, you can use them to retrieve a `SellerConnector`  instance, from which you can get an instance of any seller API:
 
