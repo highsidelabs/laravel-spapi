@@ -33,8 +33,8 @@ class Credentials extends Model
         ?Client $authenticationClient = null
     ): SellerConnector {
         $connector = SellingPartnerApi::seller(
-            clientId: $this->client_id,
-            clientSecret: $this->client_secret,
+            clientId: $this->client_id ?? config('spapi.single.lwa.client_id'),
+            clientSecret: $this->client_secret ?? config('spapi.single.lwa.client_secret'),
             refreshToken: $this->refresh_token,
             endpoint: Endpoint::byRegion($this->region),
             dataElements: $dataElements,
@@ -57,8 +57,8 @@ class Credentials extends Model
         ?Client $authenticationClient = null
     ): VendorConnector {
         $connector = SellingPartnerApi::vendor(
-            clientId: $this->client_id,
-            clientSecret: $this->client_secret,
+            clientId: $this->client_id ?? config('spapi.single.lwa.client_id'),
+            clientSecret: $this->client_secret ?? config('spapi.single.lwa.client_secret'),
             refreshToken: $this->refresh_token,
             endpoint: Endpoint::byRegion($this->region),
             dataElements: $dataElements,

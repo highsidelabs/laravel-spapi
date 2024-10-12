@@ -6,11 +6,24 @@ namespace HighsideLabs\LaravelSpApi\Tests;
 
 use HighsideLabs\LaravelSpApi\SellingPartnerApiServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Orchestra\Testbench\Attributes\WithEnv;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
+#[WithEnv('SPAPI_LWA_CLIENT_ID', 'client-id')]
+#[WithEnv('SPAPI_LWA_CLIENT_SECRET', 'client-secret')]
+#[WithEnv('SPAPI_LWA_REFRESH_TOKEN', 'refresh-token')]
+#[WithEnv('SPAPI_ENDPOINT_REGION', 'EU')]
 class TestCase extends OrchestraTestCase
 {
     use RefreshDatabase;
+
+    protected function resolveApplicationConfiguration($app): void
+    {
+        parent::resolveApplicationConfiguration($app);
+
+        $spapiConfig = require __DIR__.'/../config/spapi.php';
+        $app['config']->set('spapi', $spapiConfig);
+    }
 
     protected function defineDatabaseMigrations(): void
     {

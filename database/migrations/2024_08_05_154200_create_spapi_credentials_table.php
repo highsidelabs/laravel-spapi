@@ -31,8 +31,9 @@ return new class extends Migration
             $table->enum('region', Region::values());
 
             // The app credentials that the the refresh token was created with
-            $table->string('client_id');
-            $table->string('client_secret');
+            $table->string('client_id')->nullable();
+            $table->string('client_secret')->nullable();
+
             // The LWA refresh token for this set of credentials
             $table->string('refresh_token', 511);
 
