@@ -14,7 +14,7 @@
 
 Simplify connecting to the Selling Partner API with Laravel. Uses [jlevers/selling-partner-api](https://github.com/jlevers/selling-partner-api) under the hood.
 
-> [!INFO]
+> [!NOTE]
 > There is a lot of boilerplate involved in building a Selling Partner API application: setting up credential management, OAuth, infrastructure for handling feeds and reports, and more. I built an [SP API Laravel starter kit](https://tools.highsidelabs.co/starter-kit) that comes with all that functionality baked in, so you can focus on writing business logic. The starter kit uses this package, along with `jlevers/selling-partner-api`, to make developing SP API applications easier. Read the full documentation [here](https://docs.highsidelabs.co/sp-api-starter-kit).
 
 ### Related packages
