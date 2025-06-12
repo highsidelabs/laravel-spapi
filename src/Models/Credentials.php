@@ -32,19 +32,11 @@ class Credentials extends Model
         ?string $delegatee = null,
         ?Client $authenticationClient = null
     ): SellerConnector {
-        $region = $this->region;
-        $isSandbox = false;
-
-        if (str_contains($region, '_SANDBOX')) {
-            $region = str_replace('_SANDBOX', '', $region);
-            $isSandbox = true;
-        }
-
         $connector = SellingPartnerApi::seller(
             clientId: $this->client_id ?? config('spapi.single.lwa.client_id'),
             clientSecret: $this->client_secret ?? config('spapi.single.lwa.client_secret'),
             refreshToken: $this->refresh_token,
-            endpoint: Endpoint::byRegion($this->region, $isSandbox),
+            endpoint: Endpoint::byRegion(...$this->getSandboxRegion($this->region)),
             dataElements: $dataElements,
             delegatee: $delegatee,
             authenticationClient: $authenticationClient,
@@ -68,7 +60,7 @@ class Credentials extends Model
             clientId: $this->client_id ?? config('spapi.single.lwa.client_id'),
             clientSecret: $this->client_secret ?? config('spapi.single.lwa.client_secret'),
             refreshToken: $this->refresh_token,
-            endpoint: Endpoint::byRegion($this->region),
+            endpoint: Endpoint::byRegion(...$this->getSandboxRegion($this->region)),
             dataElements: $dataElements,
             delegatee: $delegatee,
             authenticationClient: $authenticationClient,
@@ -78,6 +70,18 @@ class Credentials extends Model
         static::debug($connector);
 
         return $connector;
+    }
+
+    private function getSandboxRegion($region): Array
+    {
+        $isSandbox = false;
+
+        if (str_contains($region, '_SANDBOX')) {
+            $region = str_replace('_SANDBOX', '', $region);
+            $isSandbox = true;
+        }
+
+        return [$region, $isSandbox];
     }
 
     /**
