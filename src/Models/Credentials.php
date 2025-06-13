@@ -72,7 +72,7 @@ class Credentials extends Model
         return $connector;
     }
 
-    private function getSandboxRegion($region): Array
+    public function getSandboxRegion($region): Array
     {
         $isSandbox = false;
 
