@@ -81,9 +81,10 @@ SPAPI_LWA_REFRESH_TOKEN=
 
 # Optional
 # SPAPI_ENDPOINT_REGION=
+# SPAPI_SANDBOX=
 ```
 
-Set `SPAPI_ENDPOINT_REGION` to the region code for the endpoint you want to use (EU for Europe, FE for Far East, or NA for North America). The default is North America. You can use EU_SANDBOX, FE_SANDBOX, or NA_SANDBOX for the sandbox regions.
+Set `SPAPI_ENDPOINT_REGION` to the region code for the endpoint you want to use (EU for Europe, FE for Far East, or NA for North America). The default is North America. You can access the sandbox environments by setting SPAPI_SANDBOX to true.
 
 ### Usage
 

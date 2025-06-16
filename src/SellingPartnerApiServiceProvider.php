@@ -52,6 +52,7 @@ class SellingPartnerApiServiceProvider extends ServiceProvider
                 'client_secret' => config('spapi.single.lwa.client_secret'),
                 'refresh_token' => config('spapi.single.lwa.refresh_token'),
                 'region' => config('spapi.single.endpoint'),
+                'sandbox' => config('spapi.single.sandbox'),
             ]);
             // To give the cache an ID to work with
             $creds->id = 1;
