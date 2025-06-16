@@ -24,6 +24,7 @@ class CacheTest extends TestCase
             'seller_id' => $seller->id,
             'selling_partner_id' => 'spid01',
             'region' => 'NA',
+            'sandbox' => true,
             'client_id' => 'client-id',
             'client_secret' => 'client-secret',
             'refresh_token' => 'refresh-token',

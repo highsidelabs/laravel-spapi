@@ -28,6 +28,7 @@ class MultiSellerTest extends TestCase
             'client_secret' => 'client-secret-1',
             'refresh_token' => 'refresh-token-1',
             'region' => 'NA',
+            'sandbox' => true,
         ]);
     }
 
@@ -58,6 +59,7 @@ class MultiSellerTest extends TestCase
             'selling_partner_id' => 'spapi02',
             'refresh_token' => 'refresh-token-2',
             'region' => 'EU',
+            'sandbox' => true,
         ]);
 
         $sellerConnector = $creds->sellerConnector();
