@@ -12,6 +12,7 @@ return [
 
         // Valid options are NA, EU, FE
         'endpoint' => env('SPAPI_ENDPOINT_REGION', 'NA'),
+        'sandbox' => env('SPAPI_SANDBOX', false),
     ],
 
     'debug' => env('SPAPI_DEBUG', false),
